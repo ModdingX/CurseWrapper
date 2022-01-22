@@ -6,6 +6,7 @@ import java.security.NoSuchAlgorithmException;
 
 public enum HashAlgo {
     
+    OTHER("other"),
     SHA1("sha1"),
     MD5("md5");
     
@@ -17,6 +18,7 @@ public enum HashAlgo {
     
     @Nullable
     public MessageDigest createDigest() {
+        if (this == OTHER) return null;
         try {
             return MessageDigest.getInstance(this.name());
         } catch (NoSuchAlgorithmException e) {

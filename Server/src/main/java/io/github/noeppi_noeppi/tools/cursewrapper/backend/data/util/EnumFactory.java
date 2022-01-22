@@ -57,7 +57,7 @@ public class EnumFactory implements TypeAdapterFactory {
         @Override
         public T read(JsonReader in) throws IOException {
             int idx = in.nextInt();
-            if (idx > 0 && idx <= this.values.size()) {
+            if (idx > 0 && idx < this.values.size()) {
                 return this.values.get(idx);
             } else if (this.defaultValue != null) {
                 return this.defaultValue;
