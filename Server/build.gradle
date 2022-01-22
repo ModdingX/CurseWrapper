@@ -1,11 +1,9 @@
 import java.nio.file.Files
 
-apply plugin: 'java-library'
 apply plugin: 'application'
 apply plugin: 'maven-publish'
 
 dependencies {
-    implementation 'com.google.code.findbugs:jsr305:3.0.2'
     implementation 'net.sf.jopt-simple:jopt-simple:5.0.4'
     implementation 'com.sparkjava:spark-core:2.9.3'
     
@@ -33,13 +31,19 @@ task collectDependencies {
     doFirst {
         Files.createDirectories(project.file('build').toPath())
         Writer writer = Files.newBufferedWriter(project.file('build/deps.txt').toPath())
-        configurations.runtimeClasspath.getAllDependencies().forEach { dep ->
-            if (dep instanceof ExternalModuleDependency) {
-                writer.write("${dep.group}:${dep.name}:${dep.version}\n")
-            } else {
-                throw new IllegalStateException("Invalid dependency: ${dep}")
+        var processDeps
+        processDeps = { Project p ->
+            p.configurations.runtimeClasspath.getAllDependencies().forEach { dep ->
+                if (dep instanceof ExternalModuleDependency) {
+                    writer.write("${dep.group}:${dep.name}:${dep.version}\n")
+                } else if (dep instanceof ProjectDependency) {
+                    processDeps(dep.dependencyProject)
+                } else {
+                    throw new IllegalStateException("Invalid dependency: ${dep}")
+                }
             }
         }
+        processDeps(project)
         writer.close()
     }
 }

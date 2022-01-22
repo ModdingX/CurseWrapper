@@ -1,5 +1,8 @@
 rootProject.name = 'CurseWrapperRoot'
 
+include ':CurseWrapperShared'
+project(':CurseWrapperShared').projectDir = file('Shared')
+
 include ':CurseWrapper'
 project(':CurseWrapper').projectDir = file('Wrapper')
 

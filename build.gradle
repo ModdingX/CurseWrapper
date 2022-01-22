@@ -1,7 +1,21 @@
 subprojects {
+    apply plugin: 'java-library'
+    
     group 'io.github.noeppi_noeppi.tools'
 
     repositories {
         mavenCentral()
+    }
+
+    if (project != project(':CurseWrapperShared')) {
+        project.afterEvaluate {
+            dependencies {
+                api project(':CurseWrapperShared')
+            }
+            
+            jar {
+                from project(':CurseWrapperShared').sourceSets.main.output
+            }
+        }
     }
 }
