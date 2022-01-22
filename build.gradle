@@ -1,0 +1,7 @@
+subprojects {
+    group 'io.github.noeppi_noeppi.tools'
+
+    repositories {
+        mavenCentral()
+    }
+}

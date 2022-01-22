@@ -1,0 +1,38 @@
+apply plugin: 'java-library'
+apply plugin: 'application'
+apply plugin: 'maven-publish'
+
+dependencies {
+    api 'com.google.code.findbugs:jsr305:3.0.2'
+}
+
+jar {
+    manifest.attributes([
+            "Automatic-Module-Name": "io.github.noeppi_noeppi.tools.cursewrapper"
+    ])
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            groupId = project.group
+            artifactId = project.name
+            version = project.version
+            pom {
+                licenses {
+                    license {
+                        name = "The Apache License, Version 2.0"
+                        url = "https://www.apache.org/licenses/LICENSE-2.0.txt"
+                    }
+                }
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            url rootProject.file('../MinecraftUtilities/maven')
+        }
+    }
+}
