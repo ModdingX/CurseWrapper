@@ -4,8 +4,8 @@ import com.google.gson.annotations.Expose;
 import io.github.noeppi_noeppi.tools.cursewrapper.backend.CurseData;
 import io.github.noeppi_noeppi.tools.cursewrapper.backend.data.structure.FileStatus;
 import io.github.noeppi_noeppi.tools.cursewrapper.backend.data.structure.HashAlgo;
-import io.github.noeppi_noeppi.tools.cursewrapper.backend.data.structure.RelationType;
-import io.github.noeppi_noeppi.tools.cursewrapper.backend.data.structure.ReleaseType;
+import io.github.noeppi_noeppi.tools.cursewrapper.backend.data.structure.ModRelationType;
+import io.github.noeppi_noeppi.tools.cursewrapper.backend.data.structure.ModReleaseType;
 
 import java.util.Date;
 import java.util.List;
@@ -27,7 +27,7 @@ public class ModFileResponse implements CurseData {
         @Expose public boolean isAvailable;
         @Expose public String displayName;
         @Expose public String fileName;
-        @Expose public ReleaseType releaseType;
+        @Expose public ModReleaseType releaseType;
         @Expose public FileStatus fileStatus;
         @Expose public List<FileHash> hashes;
         @Expose public Date fileDate;
@@ -43,7 +43,7 @@ public class ModFileResponse implements CurseData {
         @Expose public int serverPackFileId;
         @Expose public int fileFingerprint;
 
-        public ModFile(int id, int gameId, int modId, boolean isAvailable, String displayName, String fileName, ReleaseType releaseType, FileStatus fileStatus, List<FileHash> hashes, Date fileDate, int fileLength, int downloadCount, String downloadUrl, List<String> gameVersions, List<Dependency> dependencies, int parentProjectFileId, int alternateFileId, boolean isServerPack, int serverPackFileId, int fileFingerprint) {
+        public ModFile(int id, int gameId, int modId, boolean isAvailable, String displayName, String fileName, ModReleaseType releaseType, FileStatus fileStatus, List<FileHash> hashes, Date fileDate, int fileLength, int downloadCount, String downloadUrl, List<String> gameVersions, List<Dependency> dependencies, int parentProjectFileId, int alternateFileId, boolean isServerPack, int serverPackFileId, int fileFingerprint) {
             this.id = id;
             this.gameId = gameId;
             this.modId = modId;
@@ -82,9 +82,9 @@ public class ModFileResponse implements CurseData {
         
         @Expose public int modId;
         @Expose public int fileId;
-        @Expose public RelationType relationType;
+        @Expose public ModRelationType relationType;
 
-        public Dependency(int modId, int fileId, RelationType relationType) {
+        public Dependency(int modId, int fileId, ModRelationType relationType) {
             this.modId = modId;
             this.fileId = fileId;
             this.relationType = relationType;

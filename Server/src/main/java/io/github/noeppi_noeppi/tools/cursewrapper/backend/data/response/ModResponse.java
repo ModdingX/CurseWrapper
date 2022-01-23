@@ -4,7 +4,7 @@ import com.google.gson.annotations.Expose;
 import io.github.noeppi_noeppi.tools.cursewrapper.backend.CurseData;
 import io.github.noeppi_noeppi.tools.cursewrapper.backend.data.structure.ModLoaderType;
 import io.github.noeppi_noeppi.tools.cursewrapper.backend.data.structure.ModStatus;
-import io.github.noeppi_noeppi.tools.cursewrapper.backend.data.structure.ReleaseType;
+import io.github.noeppi_noeppi.tools.cursewrapper.backend.data.structure.ModReleaseType;
 
 import java.util.Date;
 import java.util.List;
@@ -135,11 +135,11 @@ public class ModResponse implements CurseData {
         @Expose public String gameVersion;
         @Expose public int fileId;
         @Expose public String filename;
-        @Expose public ReleaseType releaseType;
+        @Expose public ModReleaseType releaseType;
         @Expose public int gameVersionTypeId;
         @Expose public ModLoaderType modLoader;
 
-        public LatestFileIndex(String gameVersion, int fileId, String filename, ReleaseType releaseType, int gameVersionTypeId, ModLoaderType modLoader) {
+        public LatestFileIndex(String gameVersion, int fileId, String filename, ModReleaseType releaseType, int gameVersionTypeId, ModLoaderType modLoader) {
             this.gameVersion = gameVersion;
             this.fileId = fileId;
             this.filename = filename;

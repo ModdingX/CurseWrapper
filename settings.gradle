@@ -1,5 +1,6 @@
 rootProject.name = 'CurseWrapperRoot'
 
+// Shared must be first
 include ':CurseWrapperShared'
 project(':CurseWrapperShared').projectDir = file('Shared')
 

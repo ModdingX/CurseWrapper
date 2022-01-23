@@ -4,7 +4,7 @@ import javax.annotation.Nullable;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-public enum HashAlgo {
+public enum HashAlgo implements CurseEnum {
     
     OTHER("other"),
     SHA1("sha1"),

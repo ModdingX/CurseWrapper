@@ -1,6 +1,6 @@
 package io.github.noeppi_noeppi.tools.cursewrapper.backend.data.structure;
 
-public enum FileStatus {
+public enum FileStatus implements CurseEnum {
     
     OTHER("other"),
     PROCESSING("processing"),

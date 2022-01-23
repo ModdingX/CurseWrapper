@@ -22,6 +22,32 @@ public class CurseServer {
             logger.warn("Running without SSL.");
         }
         
+        // Search mods, empty term = featured mods
+        
+        // Project slug
+        
+        // Project info
+        //   slug
+        //   name
+        //   websiteUrl
+        //   thumbnailUrl
+        //   
+        
+        // All files for project + filter by game version, loader
+        
+        // File Info
+        //   projectId
+        //   fileId
+        //   fileName
+        //   loader
+        //   game version
+        //   release type
+        //   fileDate
+        //   dependencies
+        //   
+        
+        // File Changelog
+        
         // TODO routes
         
         this.spark.awaitInitialization();

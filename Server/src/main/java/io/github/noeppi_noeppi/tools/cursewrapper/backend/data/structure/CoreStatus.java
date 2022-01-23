@@ -1,6 +1,6 @@
 package io.github.noeppi_noeppi.tools.cursewrapper.backend.data.structure;
 
-public enum CoreStatus {
+public enum CoreStatus implements CurseEnum {
     
     OTHER("invalid"),
     DRAFT("draft"),
