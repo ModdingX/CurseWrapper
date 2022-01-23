@@ -13,4 +13,11 @@ public record FileInfo(
         ReleaseType releaseType,
         Instant fileDate,
         List<Dependency> dependencies
-) {}
+) implements Comparable<FileInfo> {
+
+    // Newer files first
+    @Override
+    public int compareTo(FileInfo o) {
+        return Integer.compare(o.fileId, this.fileId);
+    }
+}
