@@ -89,8 +89,8 @@ public class CurseWrapperJson {
         URI thumbnail = URI.create(obj.get("thumbnail").getAsString());
         return new ProjectInfo(projectId, slug, name, owner, summary, website, thumbnail);
     }
-    
-    private static <T> JsonArray array(List<T> values, Function<? super T, ? extends JsonElement> mapper) {
+
+    public static <T> JsonArray array(List<T> values, Function<? super T, ? extends JsonElement> mapper) {
         JsonArray array = new JsonArray();
         for (T elem : values) {
             array.add(mapper.apply(elem));
@@ -98,7 +98,7 @@ public class CurseWrapperJson {
         return array;
     }
 
-    private static <T> List<T> list(JsonElement json, Function<? super JsonElement, ? extends T> mapper) {
+    public static <T> List<T> list(JsonElement json, Function<? super JsonElement, ? extends T> mapper) {
         List<T> list = new ArrayList<>();
         for (JsonElement elem : json.getAsJsonArray()) {
             list.add(mapper.apply(elem));

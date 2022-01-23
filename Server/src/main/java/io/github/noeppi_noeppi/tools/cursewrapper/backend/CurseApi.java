@@ -26,6 +26,7 @@ public class CurseApi {
     static {
         GsonBuilder builder = new GsonBuilder();
         builder.disableHtmlEscaping();
+        builder.disableInnerClassSerialization();
         builder.setDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
         builder.excludeFieldsWithoutExposeAnnotation();
         builder.registerTypeAdapterFactory(new EnumFactory());

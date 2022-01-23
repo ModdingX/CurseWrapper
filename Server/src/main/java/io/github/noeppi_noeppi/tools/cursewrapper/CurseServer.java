@@ -13,9 +13,11 @@ public class CurseServer {
     
     private final Service spark;
     
-    public CurseServer(int port, SslData ssl, CurseApi api) {
+    public CurseServer(int port, SslData ssl, CurseApi api, int threads) {
         logger.info("Starting Server on port {}.", port);
         this.spark = Service.ignite();
+        this.spark.port(port);
+        this.spark.threadPool(threads);
         if (ssl != null) {
             this.spark.secure(ssl.cert().toAbsolutePath().normalize().toString(), ssl.key(), null, null);
         } else {
