@@ -43,7 +43,7 @@ public class CurseServer {
         //   
         
         // All files for project + filter by game version, loader
-        // route: project/{projectId}/files
+        // route: project/{projectId}/files?loader=...&version=...
         // result: List<FileInfo>
         
         // File Info
