@@ -22,11 +22,20 @@ public class CurseServer {
             logger.warn("Running without SSL.");
         }
         
+        // Query args are non-mandatory
+        
         // Search mods, empty term = featured mods
+        // max 30 results, discard others as never needed
+        // route: search?loader=...&version=...&query=...
+        // result:  List<ProjectInfo>
         
         // Project slug
+        // route: slug/{projectId}
+        // result: Just a string, no json data
         
         // Project info
+        // route: project/{projectId}
+        // result: ProjectInfo
         //   slug
         //   name
         //   websiteUrl
@@ -34,8 +43,12 @@ public class CurseServer {
         //   
         
         // All files for project + filter by game version, loader
+        // route: project/{projectId}/files
+        // result: List<FileInfo>
         
         // File Info
+        // route: project/{projectId}/file/{fileId}
+        // result: FileInfo
         //   projectId
         //   fileId
         //   fileName
@@ -47,6 +60,8 @@ public class CurseServer {
         //   
         
         // File Changelog
+        // route: project/{projectId}/changelog/{fileId}
+        // result: Just a string, no json data
         
         // TODO routes
         
