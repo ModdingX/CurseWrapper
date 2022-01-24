@@ -6,7 +6,6 @@ import java.util.List;
 public record FileInfo(
         int projectId,
         int fileId,
-        String projectSlug,
         String name,
         List<ModLoader> loader,
         List<String> gameVersions,

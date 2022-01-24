@@ -2,6 +2,7 @@ package io.github.noeppi_noeppi.tools.cursewrapper.api.response;
 
 import java.util.Locale;
 
+// This always needs to match GameVersionProcessor
 public enum ModLoader {
     
     UNKNOWN,

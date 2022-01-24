@@ -41,7 +41,7 @@ public class ModFileResponse implements CurseData {
         @Expose public int alternateFileId;
         @Expose public boolean isServerPack;
         @Expose public int serverPackFileId;
-        @Expose public int fileFingerprint;
+        @Expose public long fileFingerprint;
 
         public ModFile(int id, int gameId, int modId, boolean isAvailable, String displayName, String fileName, ModReleaseType releaseType, FileStatus fileStatus, List<FileHash> hashes, Date fileDate, int fileLength, int downloadCount, String downloadUrl, List<String> gameVersions, List<Dependency> dependencies, int parentProjectFileId, int alternateFileId, boolean isServerPack, int serverPackFileId, int fileFingerprint) {
             this.id = id;

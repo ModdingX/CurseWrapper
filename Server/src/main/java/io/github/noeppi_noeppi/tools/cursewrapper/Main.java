@@ -1,6 +1,7 @@
 package io.github.noeppi_noeppi.tools.cursewrapper;
 
 import io.github.noeppi_noeppi.tools.cursewrapper.backend.CurseApi;
+import io.github.noeppi_noeppi.tools.cursewrapper.cache.CurseCache;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
@@ -35,7 +36,8 @@ public class Main {
                 .availableUnless(specDocker, specNoSsl).withRequiredArg().defaultsTo("");
 
         OptionSpec<Integer> specPort = options.accepts("port", "The port to run on.").withRequiredArg().ofType(Integer.class);
-        OptionSpec<Integer> specThreads = options.accepts("threads", "How many threads the server should use.").withRequiredArg().ofType(Integer.class).defaultsTo(4);
+        OptionSpec<Integer> specThreads = options.accepts("threads", "How many threads the server should use.")
+                .withRequiredArg().ofType(Integer.class).defaultsTo(Math.min(4, Runtime.getRuntime().availableProcessors()));
 
         OptionSet set = options.parse(args);
 
@@ -44,7 +46,7 @@ public class Main {
 
         String token;
         CurseServer.SslData ssl = null;
-        int port = set.has(specPort) ? set.valueOf(specPort) : (useSsl ? 553 : 80);
+        int port = set.has(specPort) ? set.valueOf(specPort) : (useSsl ? 443 : 80);
 
         if (docker) {
             token = dockerSecret("curse_token");
@@ -60,7 +62,8 @@ public class Main {
 
         CurseApi api = new CurseApi(token);
         api.testToken();
-        CurseServer server = new CurseServer(port, ssl, api, set.valueOf(specThreads));
+        CurseCache cache = new CurseCache();
+        CurseServer server = new CurseServer(port, ssl, set.valueOf(specThreads), api, cache);
         Runtime.getRuntime().addShutdownHook(new Thread(server::shutdown));
     }
 

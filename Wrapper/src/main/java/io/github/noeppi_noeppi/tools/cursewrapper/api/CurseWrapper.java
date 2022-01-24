@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class CurseWrapper {
     
@@ -62,8 +61,8 @@ public class CurseWrapper {
     public List<ProjectInfo> searchMods(String query, FileFilter filter) throws IOException {
         return makeRequest("search", Map.of(
                 "query", query,
-                "loader", filter.loader().stream().map(l -> l.id).collect(Collectors.joining(",")),
-                "version", String.join(",", filter.gameVersions())
+                "loader", filter.loader().map(l -> l.id).orElse(""),
+                "version", filter.gameVersion().orElse("")
         ), json -> CurseWrapperJson.list(json, CurseWrapperJson::projectInfo));
     }
 
@@ -73,8 +72,8 @@ public class CurseWrapper {
     
     public List<FileInfo> getFiles(int projectId, FileFilter filter) throws IOException {
         return makeRequest("project/" + projectId + "/files", Map.of(
-                "loader", filter.loader().stream().map(l -> l.id).collect(Collectors.joining(",")),
-                "version", String.join(",", filter.gameVersions())
+                "loader", filter.loader().map(l -> l.id).orElse(""),
+                "version", filter.gameVersion().orElse("")
         ), json -> CurseWrapperJson.list(json, CurseWrapperJson::fileInfo));
     }
     

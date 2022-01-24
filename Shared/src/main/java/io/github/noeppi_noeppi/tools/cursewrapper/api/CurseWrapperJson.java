@@ -42,7 +42,6 @@ public class CurseWrapperJson {
         JsonObject json = new JsonObject();
         json.addProperty("project", file.projectId());
         json.addProperty("file", file.fileId());
-        json.addProperty("slug", file.projectSlug());
         json.addProperty("name", file.name());
         json.add("loader", array(file.loader(), l -> new JsonPrimitive(l.id)));
         json.add("versions", array(file.gameVersions(), JsonPrimitive::new));
@@ -56,14 +55,13 @@ public class CurseWrapperJson {
         JsonObject obj = json.getAsJsonObject();
         int projectId = obj.get("project").getAsInt();
         int fileId = obj.get("file").getAsInt();
-        String slug = obj.get("slug").getAsString();
         String name = obj.get("name").getAsString();
         List<ModLoader> loader = list(obj.get("loader"), j -> ModLoader.get(j.getAsString()));
         List<String> versions = list(obj.get("versions"), JsonElement::getAsString);
         ReleaseType release = ReleaseType.get(obj.get("release").getAsString());
         Instant date = instant(obj.get("date"));
         List<Dependency> dependencies = list(obj.get("dependencies"), CurseWrapperJson::dependency);
-        return new FileInfo(projectId, fileId, slug, name, loader, versions, release, date, dependencies);
+        return new FileInfo(projectId, fileId, name, loader, versions, release, date, dependencies);
     }
     
     public static JsonElement toJson(ProjectInfo project) {

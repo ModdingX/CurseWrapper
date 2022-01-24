@@ -1,15 +1,17 @@
-package io.github.noeppi_noeppi.tools.cursewrapper.backend;
+package io.github.noeppi_noeppi.tools.cursewrapper.convert;
 
 import io.github.noeppi_noeppi.tools.cursewrapper.api.response.ModLoader;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 // Still no real loader support, take the game versions apart here
 public class GameVersionProcessor {
     
-    private static GameVersionData data(List<String> gameVersions) {
+    public static GameVersionData data(List<String> gameVersions) {
         List<ModLoader> loaders = new ArrayList<>();
         List<String> versions = new ArrayList<>();
         for (String str : gameVersions) {
@@ -22,8 +24,15 @@ public class GameVersionProcessor {
                 default -> versions.add(str);
             }
         }
-        if (loaders.isEmpty()) loaders.add(ModLoader.UNKNOWN);
+        // Many old files are not tagged for any loader.
+        // We'll tag them as forge here
+        if (loaders.isEmpty()) loaders.add(ModLoader.FORGE);
         return new GameVersionData(List.copyOf(loaders), List.copyOf(versions));
+    }
+    
+    public static boolean check(List<String> gameVersions, @Nullable ModLoader loader, @Nullable String version) {
+        GameVersionData data = data(gameVersions);
+        return (loader == null || data.loader().contains(loader)) && (version == null || data.versions().contains(version));
     }
     
     public record GameVersionData(List<ModLoader> loader, List<String> versions) {}

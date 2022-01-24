@@ -1,6 +1,8 @@
 package io.github.noeppi_noeppi.tools.cursewrapper;
 
 import io.github.noeppi_noeppi.tools.cursewrapper.backend.CurseApi;
+import io.github.noeppi_noeppi.tools.cursewrapper.cache.CurseCache;
+import io.github.noeppi_noeppi.tools.cursewrapper.route.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.Service;
@@ -13,59 +15,23 @@ public class CurseServer {
     
     private final Service spark;
     
-    public CurseServer(int port, SslData ssl, CurseApi api, int threads) {
+    public CurseServer(int port, SslData ssl, int threads, CurseApi api, CurseCache cache) {
         logger.info("Starting Server on port {}.", port);
         this.spark = Service.ignite();
         this.spark.port(port);
-        this.spark.threadPool(threads);
+        this.spark.threadPool(threads, threads, -1);
         if (ssl != null) {
             this.spark.secure(ssl.cert().toAbsolutePath().normalize().toString(), ssl.key(), null, null);
         } else {
             logger.warn("Running without SSL.");
         }
         
-        // Query args are non-mandatory
-        
-        // Search mods, empty term = featured mods
-        // max 30 results, discard others as never needed
-        // route: search?loader=...&version=...&query=...
-        // result:  List<ProjectInfo>
-        
-        // Project slug
-        // route: slug/{projectId}
-        // result: Just a string, no json data
-        
-        // Project info
-        // route: project/{projectId}
-        // result: ProjectInfo
-        //   slug
-        //   name
-        //   websiteUrl
-        //   thumbnailUrl
-        //   
-        
-        // All files for project + filter by game version, loader
-        // route: project/{projectId}/files?loader=...&version=...
-        // result: List<FileInfo>
-        
-        // File Info
-        // route: project/{projectId}/file/{fileId}
-        // result: FileInfo
-        //   projectId
-        //   fileId
-        //   fileName
-        //   loader
-        //   game version
-        //   release type
-        //   fileDate
-        //   dependencies
-        //   
-        
-        // File Changelog
-        // route: project/{projectId}/changelog/{fileId}
-        // result: Just a string, no json data
-        
-        // TODO routes
+        this.spark.get("/search", new SearchRoute(this.spark, api, cache));
+        this.spark.get("/slug/:projectId", new SlugRoute(this.spark, api, cache));
+        this.spark.get("/project/:projectId", new ProjectRoute(this.spark, api, cache));
+        this.spark.get("/project/:projectId/files", new FilesRoute(this.spark, api, cache));
+        this.spark.get("/project/:projectId/file/:fileId", new FileRoute(this.spark, api, cache));
+        this.spark.get("/project/:projectId/changelog/:fileId", new ChangelogRoute(this.spark, api, cache));
         
         this.spark.awaitInitialization();
     }

@@ -6,6 +6,7 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.TypeAdapterFactory;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 
 import javax.annotation.Nullable;
@@ -56,13 +57,18 @@ public class EnumFactory implements TypeAdapterFactory {
 
         @Override
         public T read(JsonReader in) throws IOException {
-            int idx = in.nextInt();
-            if (idx > 0 && idx < this.values.size()) {
-                return this.values.get(idx);
-            } else if (this.defaultValue != null) {
+            if (in.peek() == JsonToken.NULL) {
+                in.nextNull();
                 return this.defaultValue;
             } else {
-                throw new JsonParseException("Invalid enum constant " + idx + " for " + cls.getSimpleName());
+                int idx = in.nextInt();
+                if (idx > 0 && idx < this.values.size()) {
+                    return this.values.get(idx);
+                } else if (this.defaultValue != null) {
+                    return this.defaultValue;
+                } else {
+                    throw new JsonParseException("Invalid enum constant " + idx + " for " + cls.getSimpleName());
+                }
             }
         }
     }
