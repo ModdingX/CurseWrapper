@@ -62,8 +62,8 @@ public class Main {
 
         CurseApi api = new CurseApi(token);
         api.testToken();
-        CurseCache cache = new CurseCache();
-        CurseServer server = new CurseServer(port, ssl, set.valueOf(specThreads), api, cache);
+        CurseCache cache = new CurseCache(api);
+        CurseServer server = new CurseServer(port, ssl, set.valueOf(specThreads), cache);
         Runtime.getRuntime().addShutdownHook(new Thread(server::shutdown));
     }
 

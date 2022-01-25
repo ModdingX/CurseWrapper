@@ -52,18 +52,18 @@ public class CurseApi {
     public void testToken() {
         logger.info("Checking CurseForge token.");
         try {
-            request("games", EmptyData.class);
+            this.request("games", EmptyData.class);
         } catch (IOException e) {
             throw new IllegalStateException("Invalid CurseForge token", e);
         }
     }
 
     public <O extends CurseData> O request(String endpoint, Class<O> resultCls) throws IOException {
-        return request(endpoint, ImmutableMultimap.of(), resultCls);
+        return this.request(endpoint, ImmutableMultimap.of(), resultCls);
     }
     
     public <O extends CurseData> O request(String endpoint, String key, String value, Class<O> resultCls) throws IOException {
-        return request(endpoint, ImmutableMultimap.of(key, value), resultCls);
+        return this.request(endpoint, ImmutableMultimap.of(key, value), resultCls);
     }
     
     public <O extends CurseData> O request(String endpoint, Multimap<String, String> args, Class<O> resultCls) throws IOException {
@@ -104,7 +104,7 @@ public class CurseApi {
         }
     }
 
-    public <I extends CurseData, O extends CurseData> O request(String endpoint, I request, Class<O> resultCls) throws IOException {
+    public <T extends CurseData> T request(String endpoint, CurseData request, Class<T> resultCls) throws IOException {
         try {
             String json = GSON.toJson(request, request.getClass());
             HttpRequest httpRequest = HttpRequest.newBuilder().POST(HttpRequest.BodyPublishers.ofString(json, StandardCharsets.UTF_8))

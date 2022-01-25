@@ -13,6 +13,7 @@ import io.github.noeppi_noeppi.tools.cursewrapper.backend.data.response.ModSearc
 import io.github.noeppi_noeppi.tools.cursewrapper.backend.data.structure.ModLoaderType;
 import io.github.noeppi_noeppi.tools.cursewrapper.backend.data.structure.ModSearchSortField;
 import io.github.noeppi_noeppi.tools.cursewrapper.cache.CacheKey;
+import io.github.noeppi_noeppi.tools.cursewrapper.cache.CacheUtils;
 import io.github.noeppi_noeppi.tools.cursewrapper.cache.CurseCache;
 import io.github.noeppi_noeppi.tools.cursewrapper.convert.ApiConverter;
 import io.github.noeppi_noeppi.tools.cursewrapper.route.base.JsonRoute;
@@ -27,8 +28,8 @@ import java.util.Optional;
 
 public class SearchRoute extends JsonRoute {
     
-    public SearchRoute(Service spark, CurseApi api, CurseCache cache) {
-        super(spark, api, cache);
+    public SearchRoute(Service spark, CurseCache cache) {
+        super(spark, cache);
     }
 
     @Override
@@ -40,21 +41,24 @@ public class SearchRoute extends JsonRoute {
         Optional<String> version = Optional.ofNullable(request.queryParams("version"));
         CacheKey.SearchKey key = new CacheKey.SearchKey(query, loader, version);
         
-        List<Integer> projectIds = this.cache.get(CacheKey.SEARCH, key, this::resolve);
+        return this.cache.runLocked(CacheKey.PROJECT, () -> {
+            List<Integer> projectIds = this.cache.get(CacheKey.SEARCH, key, this::resolve);
+            List<ProjectInfo> projects = CacheUtils.bulkMap(this.cache, CacheKey.PROJECT, projectIds, CommonCacheResolvers::project, CommonCacheResolvers::projects);
 
-        JsonArray json = new JsonArray();
-        for (int projectId : projectIds) {
-            json.add(CurseWrapperJson.toJson(this.cache.get(CacheKey.PROJECT, projectId, this::resolveProject)));
-        }
-        
-        return json;
+            JsonArray json = new JsonArray();
+            for (ProjectInfo project : projects) {
+                json.add(CurseWrapperJson.toJson(project));
+            }
+
+            return json;
+        });
     }
     
-    private List<Integer> resolve(CacheKey.SearchKey key) throws IOException {
+    private List<Integer> resolve(CurseApi api, CacheKey.SearchKey key) throws IOException {
         int index = 0;
         List<Integer> projectIds = new ArrayList<>();
         while (projectIds.size() < 30) {
-            ResolveData data = resolvePartial(key, index, Math.max(30 - projectIds.size(), 0));
+            ResolveData data = this.resolvePartial(api, key, index, Math.max(30 - projectIds.size(), 0));
             projectIds.addAll(data.resolvedProjects());
             index = data.index();
             if (!data.canContinue()) break;
@@ -62,7 +66,7 @@ public class SearchRoute extends JsonRoute {
         return projectIds;
     }
     
-    private ResolveData resolvePartial(CacheKey.SearchKey key, int current, int left) throws IOException {
+    private ResolveData resolvePartial(CurseApi api, CacheKey.SearchKey key, int current, int left) throws IOException {
         // The modLoaderType parameter only works if gameVersion is present
         // and using a loader as game version does not work.
         boolean needsManualLoaderFiltering = key.loader().isPresent() && key.version().isEmpty();
@@ -81,11 +85,11 @@ public class SearchRoute extends JsonRoute {
         if (key.loader().isPresent() && !needsManualLoaderFiltering) {
             params.put("modLoaderType", Integer.toString(ModLoaderType.reverse(key.loader().get()).ordinal()));
         }
-        ModSearchResponse resp = this.api.request("mods/search", params, ModSearchResponse.class);
+        ModSearchResponse resp = api.request("mods/search", params, ModSearchResponse.class);
         List<Integer> ids = new ArrayList<>();
         for (ModResponse.Mod mod : resp.data) {
             if (ids.size() >= left) break;
-            if (!needsManualLoaderFiltering || checkLoader(mod, key.loader().get())) {
+            if (!needsManualLoaderFiltering || this.checkLoader(mod, key.loader().get())) {
                 ids.add(mod.id);
                 this.cache.store(CacheKey.PROJECT, mod.id, ApiConverter.project(mod));
             }
@@ -114,10 +118,6 @@ public class SearchRoute extends JsonRoute {
         // Hopefully this works.
         
         return false;
-    }
-
-    private ProjectInfo resolveProject(int projectId) throws IOException {
-        return ApiConverter.project(this.api.request("mods/" + projectId, ModResponse.class).data);
     }
     
     private record ResolveData(int index, boolean canContinue, List<Integer> resolvedProjects) {}

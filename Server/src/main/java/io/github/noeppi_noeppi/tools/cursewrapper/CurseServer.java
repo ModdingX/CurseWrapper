@@ -1,6 +1,5 @@
 package io.github.noeppi_noeppi.tools.cursewrapper;
 
-import io.github.noeppi_noeppi.tools.cursewrapper.backend.CurseApi;
 import io.github.noeppi_noeppi.tools.cursewrapper.cache.CurseCache;
 import io.github.noeppi_noeppi.tools.cursewrapper.route.*;
 import org.slf4j.Logger;
@@ -15,7 +14,7 @@ public class CurseServer {
     
     private final Service spark;
     
-    public CurseServer(int port, SslData ssl, int threads, CurseApi api, CurseCache cache) {
+    public CurseServer(int port, SslData ssl, int threads, CurseCache cache) {
         logger.info("Starting Server on port {}.", port);
         this.spark = Service.ignite();
         this.spark.port(port);
@@ -26,12 +25,12 @@ public class CurseServer {
             logger.warn("Running without SSL.");
         }
         
-        this.spark.get("/search", new SearchRoute(this.spark, api, cache));
-        this.spark.get("/slug/:projectId", new SlugRoute(this.spark, api, cache));
-        this.spark.get("/project/:projectId", new ProjectRoute(this.spark, api, cache));
-        this.spark.get("/project/:projectId/files", new FilesRoute(this.spark, api, cache));
-        this.spark.get("/project/:projectId/file/:fileId", new FileRoute(this.spark, api, cache));
-        this.spark.get("/project/:projectId/changelog/:fileId", new ChangelogRoute(this.spark, api, cache));
+        this.spark.get("/search", new SearchRoute(this.spark, cache));
+        this.spark.get("/slug/:projectId", new SlugRoute(this.spark, cache));
+        this.spark.get("/project/:projectId", new ProjectRoute(this.spark, cache));
+        this.spark.get("/project/:projectId/files", new FilesRoute(this.spark, cache));
+        this.spark.get("/project/:projectId/file/:fileId", new FileRoute(this.spark, cache));
+        this.spark.get("/project/:projectId/changelog/:fileId", new ChangelogRoute(this.spark, cache));
         
         this.spark.awaitInitialization();
     }

@@ -25,7 +25,7 @@ public class EnumFactory implements TypeAdapterFactory {
     public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
         if (type.getRawType().isEnum()) {
             //noinspection unchecked,rawtypes
-            return (TypeAdapter<T>) instances.computeIfAbsent(type.getRawType(), cls -> new EnumAdapter<>((Class<Enum>) cls));
+            return (TypeAdapter<T>) this.instances.computeIfAbsent(type.getRawType(), cls -> new EnumAdapter<>((Class<Enum>) cls));
         } else {
             return null;
         }
@@ -67,7 +67,7 @@ public class EnumFactory implements TypeAdapterFactory {
                 } else if (this.defaultValue != null) {
                     return this.defaultValue;
                 } else {
-                    throw new JsonParseException("Invalid enum constant " + idx + " for " + cls.getSimpleName());
+                    throw new JsonParseException("Invalid enum constant " + idx + " for " + this.cls.getSimpleName());
                 }
             }
         }

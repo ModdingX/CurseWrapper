@@ -1,6 +1,5 @@
 package io.github.noeppi_noeppi.tools.cursewrapper.route.base;
 
-import io.github.noeppi_noeppi.tools.cursewrapper.backend.CurseApi;
 import io.github.noeppi_noeppi.tools.cursewrapper.cache.CurseCache;
 import spark.Request;
 import spark.Response;
@@ -11,8 +10,8 @@ import java.util.function.Function;
 
 public abstract class TextRoute extends CurseRoute<String> {
 
-    protected TextRoute(Service spark, CurseApi api, CurseCache cache) {
-        super(spark, api, cache, "text/plain", Function.identity());
+    protected TextRoute(Service spark, CurseCache cache) {
+        super(spark, cache, "text/plain", Function.identity());
     }
 
     @Override

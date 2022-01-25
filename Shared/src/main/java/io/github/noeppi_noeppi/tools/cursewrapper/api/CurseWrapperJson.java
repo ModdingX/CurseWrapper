@@ -1,6 +1,9 @@
 package io.github.noeppi_noeppi.tools.cursewrapper.api;
 
-import com.google.gson.*;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import io.github.noeppi_noeppi.tools.cursewrapper.api.response.*;
 
 import java.math.BigInteger;

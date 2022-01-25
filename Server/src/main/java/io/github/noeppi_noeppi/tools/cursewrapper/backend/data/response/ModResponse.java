@@ -3,8 +3,8 @@ package io.github.noeppi_noeppi.tools.cursewrapper.backend.data.response;
 import com.google.gson.annotations.Expose;
 import io.github.noeppi_noeppi.tools.cursewrapper.backend.CurseData;
 import io.github.noeppi_noeppi.tools.cursewrapper.backend.data.structure.ModLoaderType;
-import io.github.noeppi_noeppi.tools.cursewrapper.backend.data.structure.ModStatus;
 import io.github.noeppi_noeppi.tools.cursewrapper.backend.data.structure.ModReleaseType;
+import io.github.noeppi_noeppi.tools.cursewrapper.backend.data.structure.ModStatus;
 
 import java.util.Date;
 import java.util.List;

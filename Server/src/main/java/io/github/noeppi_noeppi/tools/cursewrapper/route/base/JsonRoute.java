@@ -3,7 +3,6 @@ package io.github.noeppi_noeppi.tools.cursewrapper.route.base;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
-import io.github.noeppi_noeppi.tools.cursewrapper.backend.CurseApi;
 import io.github.noeppi_noeppi.tools.cursewrapper.cache.CurseCache;
 import spark.Request;
 import spark.Response;
@@ -21,8 +20,8 @@ public abstract class JsonRoute extends CurseRoute<JsonElement> {
         GSON = builder.create();
     }
 
-    protected JsonRoute(Service spark, CurseApi api, CurseCache cache) {
-        super(spark, api, cache, "application/json", GSON::toJson);
+    protected JsonRoute(Service spark, CurseCache cache) {
+        super(spark, cache, "application/json", GSON::toJson);
     }
 
     @Override

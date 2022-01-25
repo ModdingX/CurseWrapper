@@ -1,8 +1,10 @@
 package io.github.noeppi_noeppi.tools.cursewrapper.route.base;
 
-import io.github.noeppi_noeppi.tools.cursewrapper.backend.CurseApi;
 import io.github.noeppi_noeppi.tools.cursewrapper.cache.CurseCache;
-import spark.*;
+import spark.Request;
+import spark.Response;
+import spark.Route;
+import spark.Service;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -11,14 +13,12 @@ import java.util.function.Function;
 public abstract class CurseRoute<T> implements Route {
     
     protected final Service spark;
-    protected final CurseApi api;
     protected final CurseCache cache;
     private final String content;
     private final Function<T, String> resultFunc;
 
-    protected CurseRoute(Service spark, CurseApi api, CurseCache cache, String content, Function<T, String> resultFunc) {
+    protected CurseRoute(Service spark, CurseCache cache, String content, Function<T, String> resultFunc) {
         this.spark = spark;
-        this.api = api;
         this.cache = cache;
         this.content = content;
         this.resultFunc = resultFunc;
@@ -40,7 +40,7 @@ public abstract class CurseRoute<T> implements Route {
     
     protected final int integer(Request request, String key) {
         try {
-            return Integer.parseInt(param(request, key));
+            return Integer.parseInt(this.param(request, key));
         } catch (NumberFormatException e) {
             throw this.spark.halt(400, "Invalid " + key);
         }

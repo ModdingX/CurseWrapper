@@ -11,6 +11,7 @@ import io.github.noeppi_noeppi.tools.cursewrapper.backend.CurseApi;
 import io.github.noeppi_noeppi.tools.cursewrapper.backend.data.response.ModFileResponse;
 import io.github.noeppi_noeppi.tools.cursewrapper.backend.data.response.ModFilesResponse;
 import io.github.noeppi_noeppi.tools.cursewrapper.cache.CacheKey;
+import io.github.noeppi_noeppi.tools.cursewrapper.cache.CacheUtils;
 import io.github.noeppi_noeppi.tools.cursewrapper.cache.CurseCache;
 import io.github.noeppi_noeppi.tools.cursewrapper.convert.ApiConverter;
 import io.github.noeppi_noeppi.tools.cursewrapper.convert.GameVersionProcessor;
@@ -20,31 +21,35 @@ import spark.Response;
 import spark.Service;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public class FilesRoute extends JsonRoute {
 
-    public FilesRoute(Service spark, CurseApi api, CurseCache cache) {
-        super(spark, api, cache);
+    public FilesRoute(Service spark, CurseCache cache) {
+        super(spark, cache);
     }
 
     @Override
     protected JsonElement apply(Request request, Response response) throws IOException {
         Optional<ModLoader> loader = Optional.ofNullable(request.queryParams("loader")).map(ModLoader::get);
         Optional<String> version = Optional.ofNullable(request.queryParams("version"));
-        CacheKey.FilesKey key = new CacheKey.FilesKey(integer(request, "projectId"), loader, version);
+        CacheKey.FilesKey key = new CacheKey.FilesKey(this.integer(request, "projectId"), loader, version);
 
-        List<CacheKey.FileKey> fileIds = this.cache.get(CacheKey.FILES, key, this::resolve);
+        return this.cache.runLocked(CacheKey.FILE, () -> {
+            List<CacheKey.FileKey> fileIds = this.cache.get(CacheKey.FILES, key, this::resolve);
+            List<FileInfo> files = CacheUtils.bulkMap(this.cache, CacheKey.FILE, fileIds, CommonCacheResolvers::file, CommonCacheResolvers::files);
+            JsonArray json = new JsonArray();
+            for (FileInfo file : files) {
+                json.add(CurseWrapperJson.toJson(file));
+            }
 
-        JsonArray json = new JsonArray();
-        for (CacheKey.FileKey fileId : fileIds) {
-            json.add(CurseWrapperJson.toJson(this.cache.get(CacheKey.FILE, fileId, this::resolveFile)));
-        }
-
-        return json;
+            return json;
+        });
     }
 
-    private List<CacheKey.FileKey> resolve(CacheKey.FilesKey key) throws IOException {
+    private List<CacheKey.FileKey> resolve(CurseApi api, CacheKey.FilesKey key) throws IOException {
         List<ModFileResponse.ModFile> files = new ArrayList<>();
         int currentIdx = 0;
         int max = 1;
@@ -56,8 +61,8 @@ public class FilesRoute extends JsonRoute {
         while (currentIdx < max && counter < 30) {
             Multimap<String, String> params = ArrayListMultimap.create();
             params.put("index", Integer.toString(currentIdx));
-            params.put("pageSize", Integer.toString(100));
-            ModFilesResponse resp = this.api.request("mods/" + key.projectId() + "/files", params, ModFilesResponse.class);
+            params.put("pageSize", Integer.toString(300));
+            ModFilesResponse resp = api.request("mods/" + key.projectId() + "/files", params, ModFilesResponse.class);
             
             currentIdx = resp.pagination.index + resp.pagination.resultCount;
             max = resp.pagination.totalCount;
@@ -76,9 +81,5 @@ public class FilesRoute extends JsonRoute {
         }
         
         return List.copyOf(ids);
-    }
-
-    private FileInfo resolveFile(CacheKey.FileKey key) throws IOException {
-        return ApiConverter.file(this.api.request("mods/" + key.projectId() + "/files/" + key.fileId(), ModFileResponse.class).data);
     }
 }

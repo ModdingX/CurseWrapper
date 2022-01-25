@@ -13,16 +13,16 @@ import java.io.IOException;
 
 public class ChangelogRoute extends TextRoute {
 
-    public ChangelogRoute(Service spark, CurseApi api, CurseCache cache) {
-        super(spark, api, cache);
+    public ChangelogRoute(Service spark, CurseCache cache) {
+        super(spark, cache);
     }
 
     @Override
     protected String apply(Request request, Response response) throws IOException {
-        return this.cache.get(CacheKey.CHANGELOG, new CacheKey.FileKey(integer(request, "projectId"), integer(request, "fileId")), this::resolve);
+        return this.cache.get(CacheKey.CHANGELOG, new CacheKey.FileKey(this.integer(request, "projectId"), this.integer(request, "fileId")), this::resolve);
     }
 
-    private String resolve(CacheKey.FileKey key) throws IOException {
-        return this.api.request("mods/" + key.projectId() + "/files/" + key.fileId() + "/changelog", ModFileChangelogResponse.class).data;
+    private String resolve(CurseApi api, CacheKey.FileKey key) throws IOException {
+        return api.request("mods/" + key.projectId() + "/files/" + key.fileId() + "/changelog", ModFileChangelogResponse.class).data;
     }
 }

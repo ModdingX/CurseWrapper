@@ -39,19 +39,19 @@ public class CurseWrapper {
     }
 
     public String getSlug(int projectId) throws IOException {
-        return makeStringRequest("slug/" + projectId);
+        return this.makeStringRequest("slug/" + projectId);
     }
     
     public ProjectInfo getProject(int projectId) throws IOException {
-        return makeRequest("project/" + projectId, CurseWrapperJson::projectInfo);
+        return this.makeRequest("project/" + projectId, CurseWrapperJson::projectInfo);
     }
     
     public FileInfo getFile(int projectId, int fileId) throws IOException {
-        return makeRequest("project/" + projectId + "/file/" + fileId, CurseWrapperJson::fileInfo);
+        return this.makeRequest("project/" + projectId + "/file/" + fileId, CurseWrapperJson::fileInfo);
     }
 
     public String getChangelog(int projectId, int fileId) throws IOException {
-        return makeStringRequest("project/" + projectId + "/changelog/" + fileId);
+        return this.makeStringRequest("project/" + projectId + "/changelog/" + fileId);
     }
     
     public List<ProjectInfo> searchMods(String query) throws IOException {
@@ -59,7 +59,7 @@ public class CurseWrapper {
     }
 
     public List<ProjectInfo> searchMods(String query, FileFilter filter) throws IOException {
-        return makeRequest("search", Map.of(
+        return this.makeRequest("search", Map.of(
                 "query", query,
                 "loader", filter.loader().map(l -> l.id).orElse(""),
                 "version", filter.gameVersion().orElse("")
@@ -71,18 +71,18 @@ public class CurseWrapper {
     }
     
     public List<FileInfo> getFiles(int projectId, FileFilter filter) throws IOException {
-        return makeRequest("project/" + projectId + "/files", Map.of(
+        return this.makeRequest("project/" + projectId + "/files", Map.of(
                 "loader", filter.loader().map(l -> l.id).orElse(""),
                 "version", filter.gameVersion().orElse("")
         ), json -> CurseWrapperJson.list(json, CurseWrapperJson::fileInfo));
     }
     
     private <T> T makeRequest(String endpoint, Function<JsonElement, T> mapper) throws IOException {
-        return makeRequest(endpoint, Map.of(), mapper);
+        return this.makeRequest(endpoint, Map.of(), mapper);
     }
     
     private <T> T makeRequest(String endpoint, Map<String, String> queryArgs, Function<JsonElement, T> mapper) throws IOException {
-        String data = makeRequest(endpoint, "application/json", queryArgs);
+        String data = this.makeRequest(endpoint, "application/json", queryArgs);
         try {
             return mapper.apply(GSON.fromJson(data, JsonElement.class));
         } catch (JsonParseException | ClassCastException | NoSuchElementException | IllegalStateException e) {
@@ -91,17 +91,17 @@ public class CurseWrapper {
     }
     
     private String makeStringRequest(String endpoint) throws IOException {
-        return makeStringRequest(endpoint, Map.of());
+        return this.makeStringRequest(endpoint, Map.of());
     }
     
     private String makeStringRequest(String endpoint, Map<String, String> queryArgs) throws IOException {
-        return makeRequest(endpoint, "text/plain", queryArgs);
+        return this.makeRequest(endpoint, "text/plain", queryArgs);
     }
     
     private String makeRequest(String endpoint, String accept, Map<String, String> queryArgs) throws IOException {
         try {
             HttpRequest request = HttpRequest.newBuilder().GET()
-                    .uri(getUri(endpoint, queryArgs))
+                    .uri(this.getUri(endpoint, queryArgs))
                     .header("Accept", accept)
                     .build();
             return this.client.send(request, info -> HttpResponse.BodySubscribers.ofString(StandardCharsets.UTF_8)).body();

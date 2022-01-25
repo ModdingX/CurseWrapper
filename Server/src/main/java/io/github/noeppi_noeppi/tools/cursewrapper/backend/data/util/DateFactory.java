@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
 
 // Because CurseForge sometimes sends dates without a time zone
 // First tries ISO-8601 and if it fails, tries ISO-8601 without time zone
