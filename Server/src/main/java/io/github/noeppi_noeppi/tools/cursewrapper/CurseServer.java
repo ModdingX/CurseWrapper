@@ -18,6 +18,7 @@ public class CurseServer {
         logger.info("Starting Server on port {}.", port);
         this.spark = Service.ignite();
         this.spark.port(port);
+        logger.info("Running on {} threads.", threads);
         this.spark.threadPool(threads, threads, -1);
         if (ssl != null) {
             this.spark.secure(ssl.cert().toAbsolutePath().normalize().toString(), ssl.key(), null, null);
@@ -33,6 +34,7 @@ public class CurseServer {
         this.spark.get("/project/:projectId/changelog/:fileId", new ChangelogRoute(this.spark, cache));
         
         this.spark.awaitInitialization();
+        logger.info("Server started.");
     }
     
     public void shutdown() {

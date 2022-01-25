@@ -65,6 +65,7 @@ public class Main {
         CurseCache cache = new CurseCache(api);
         CurseServer server = new CurseServer(port, ssl, set.valueOf(specThreads), cache);
         Runtime.getRuntime().addShutdownHook(new Thread(server::shutdown));
+        logger.info("Initialisation done.");
     }
 
     private static String dockerSecret(String id) throws IOException {
