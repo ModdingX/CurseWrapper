@@ -5,7 +5,7 @@ import io.github.noeppi_noeppi.tools.cursewrapper.api.response.ModLoader;
 import java.util.Optional;
 
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-public class FileFilter {
+public final class FileFilter {
     
     private static final FileFilter EMPTY = new FileFilter(Optional.empty(), Optional.empty());
     

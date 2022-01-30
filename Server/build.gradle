@@ -3,6 +3,8 @@ import java.nio.file.Files
 apply plugin: 'application'
 apply plugin: 'maven-publish'
 
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+
 dependencies {
     implementation 'net.sf.jopt-simple:jopt-simple:5.0.4'
     implementation 'com.sparkjava:spark-core:2.9.3'
