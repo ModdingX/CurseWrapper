@@ -18,9 +18,9 @@ if 'no-ssl' in config and bool(config['no-ssl']):
     args += ['--no-ssl']
 
 if 'port' in config:
-    args += ['--port', config['port']]
+    args += ['--port', str(config['port'])]
 
 if 'threads' in config:
-    args += ['--threads', config['threads']]
+    args += ['--threads', str(config['threads'])]
 
 subprocess.call(args)
