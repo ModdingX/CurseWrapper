@@ -9,8 +9,13 @@ subprojects {
 
     if (project != project(':CurseWrapperShared')) {
         project.afterEvaluate {
+            configurations {
+                api.extendsFrom(project(':CurseWrapperShared').configurations.api)
+            }
+            
             dependencies {
-                api project(':CurseWrapperShared')
+                compileClasspath project(':CurseWrapperShared')
+                runtimeClasspath project(':CurseWrapperShared')
             }
             
             jar {
