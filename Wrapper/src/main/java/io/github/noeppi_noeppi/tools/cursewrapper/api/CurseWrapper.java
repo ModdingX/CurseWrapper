@@ -103,6 +103,7 @@ public class CurseWrapper {
             HttpRequest request = HttpRequest.newBuilder().GET()
                     .uri(this.getUri(endpoint, queryArgs))
                     .header("Accept", accept)
+                    .header("User-Agent", "Java" + System.getProperty("java.version") + "/CurseWrapper")
                     .build();
             return this.client.send(request, info -> HttpResponse.BodySubscribers.ofString(StandardCharsets.UTF_8)).body();
         } catch (InterruptedException e) {

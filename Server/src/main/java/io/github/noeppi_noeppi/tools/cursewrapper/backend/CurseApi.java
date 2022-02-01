@@ -88,6 +88,7 @@ public class CurseApi {
             HttpRequest httpRequest = HttpRequest.newBuilder().GET()
                     .uri(URI.create("https://api.curseforge.com/v1/" + endpoint + argsPart))
                     .header("Accept", "application/json")
+                    .header("User-Agent", "Java" + System.getProperty("java.version") + "/CurseWrapperServer")
                     .header("x-api-key", this.token)
                     .build();
             String body = this.client.send(httpRequest, info -> HttpResponse.BodySubscribers.ofString(StandardCharsets.UTF_8)).body();
@@ -111,6 +112,7 @@ public class CurseApi {
                     .uri(URI.create("https://api.curseforge.com/v1/" + endpoint))
                     .header("Content-Type", "application/json")
                     .header("Accept", "application/json")
+                    .header("User-Agent", "Java" + System.getProperty("java.version") + "/CurseWrapperServer")
                     .header("x-api-key", this.token)
                     .build();
             String body = this.client.send(httpRequest, info -> HttpResponse.BodySubscribers.ofString(StandardCharsets.UTF_8)).body();

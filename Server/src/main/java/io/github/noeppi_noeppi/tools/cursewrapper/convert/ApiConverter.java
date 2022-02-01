@@ -10,10 +10,12 @@ import java.net.URI;
 
 public class ApiConverter {
 
+    private static final URI FALLBACK_LOGO = URI.create("https://singlecolorimage.com/get/e4e0e9/512x512");
+    
     public static ProjectInfo project(ModResponse.Mod mod) {
         return new ProjectInfo(
                 mod.id, mod.slug, mod.name, mod.authors.stream().findFirst().map(a -> a.name).orElse("unknown"),
-                mod.summary, URI.create(mod.links.websiteUrl), URI.create(mod.logo.url)
+                mod.summary, URI.create(mod.links.websiteUrl), mod.logo == null ? FALLBACK_LOGO : URI.create(mod.logo.url)
         );
     }
     

@@ -6,6 +6,7 @@ import io.github.noeppi_noeppi.tools.cursewrapper.backend.data.structure.ModLoad
 import io.github.noeppi_noeppi.tools.cursewrapper.backend.data.structure.ModReleaseType;
 import io.github.noeppi_noeppi.tools.cursewrapper.backend.data.structure.ModStatus;
 
+import javax.annotation.Nullable;
 import java.util.Date;
 import java.util.List;
 
@@ -31,7 +32,7 @@ public class ModResponse implements CurseData {
         @Expose public int primaryCategoryId;
         @Expose public List<CategoriesResponse.Category> categories;
         @Expose public List<Author> authors;
-        @Expose public Logo logo;
+        @Expose @Nullable public Logo logo;
         @Expose public List<Screenshot> screenshots;
         @Expose public int mainFileId;
         @Expose public List<ModFileResponse.ModFile> latestFiles;
@@ -40,7 +41,7 @@ public class ModResponse implements CurseData {
         @Expose public Date dateModified;
         @Expose public Date dateReleased;
 
-        public Mod(int id, int gameId, String slug, String name, Links links, String summary, ModStatus status, int downloadCount, boolean isFeatured, int primaryCategoryId, List<CategoriesResponse.Category> categories, List<Author> authors, Logo logo, List<Screenshot> screenshots, int mainFileId, List<ModFileResponse.ModFile> latestFiles, List<LatestFileIndex> latestFilesIndexes, Date dateCreated, Date dateModified, Date dateReleased) {
+        public Mod(int id, int gameId, String slug, String name, Links links, String summary, ModStatus status, int downloadCount, boolean isFeatured, int primaryCategoryId, List<CategoriesResponse.Category> categories, List<Author> authors, @Nullable Logo logo, List<Screenshot> screenshots, int mainFileId, List<ModFileResponse.ModFile> latestFiles, List<LatestFileIndex> latestFilesIndexes, Date dateCreated, Date dateModified, Date dateReleased) {
             this.id = id;
             this.gameId = gameId;
             this.slug = slug;
