@@ -30,6 +30,7 @@ public class CurseServer {
         this.spark.get("/slug/:projectId", new SlugRoute(this.spark, cache));
         this.spark.get("/project/:projectId", new ProjectRoute(this.spark, cache));
         this.spark.get("/project/:projectId/files", new FilesRoute(this.spark, cache));
+        this.spark.get("/project/:projectId/latest", new LatestFileRoute(this.spark, cache));
         this.spark.get("/project/:projectId/file/:fileId", new FileRoute(this.spark, cache));
         this.spark.get("/project/:projectId/changelog/:fileId", new ChangelogRoute(this.spark, cache));
         

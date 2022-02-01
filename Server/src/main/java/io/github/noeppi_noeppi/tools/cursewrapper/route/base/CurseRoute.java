@@ -29,7 +29,9 @@ public abstract class CurseRoute<T> implements Route {
         try {
             String result = this.resultFunc.apply(this.apply(request, response));
             response.status(result == null ? 204 : 200);
-            response.header("Content-Type", this.content);
+            if (result != null) {
+                response.header("Content-Type", this.content);
+            }
             return result;
         } catch (FileNotFoundException e) {
             throw this.spark.halt(404, "Not Found");

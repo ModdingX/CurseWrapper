@@ -15,6 +15,7 @@ public class CacheKey<K, V> {
     public static final CacheKey<FileKey, String> CHANGELOG = new CacheKey<>(300, 1000 * 60 * 60);
     public static final CacheKey<SearchKey, List<Integer>> SEARCH = new CacheKey<>(200, 1000 * 60 * 30);
     public static final CacheKey<FilesKey, List<FileKey>> FILES = new CacheKey<>(200, 1000 * 60 * 30);
+    public static final CacheKey<FilesKey, Optional<FileKey>> LATEST_FILE = new CacheKey<>(100, 1000 * 60 * 5);
     
     public final int size;
     public final int cacheTimeMillis;

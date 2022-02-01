@@ -26,6 +26,7 @@ public class CurseCache {
         addCache(api, CacheKey.CHANGELOG, map, executor);
         addCache(api, CacheKey.SEARCH, map, executor);
         addCache(api, CacheKey.FILES, map, executor);
+        addCache(api, CacheKey.LATEST_FILE, map, executor);
         this.caches = Map.copyOf(map);
     }
     

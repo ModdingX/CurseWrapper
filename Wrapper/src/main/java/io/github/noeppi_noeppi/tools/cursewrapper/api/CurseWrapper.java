@@ -6,8 +6,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import io.github.noeppi_noeppi.tools.cursewrapper.api.request.FileFilter;
 import io.github.noeppi_noeppi.tools.cursewrapper.api.response.FileInfo;
+import io.github.noeppi_noeppi.tools.cursewrapper.api.response.ModLoader;
 import io.github.noeppi_noeppi.tools.cursewrapper.api.response.ProjectInfo;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URLEncoder;
@@ -21,6 +23,11 @@ import java.util.NoSuchElementException;
 import java.util.function.Function;
 
 public class CurseWrapper {
+    
+    public static void main(String[] args) throws IOException {
+        CurseWrapper api = new CurseWrapper(URI.create("http://127.0.0.1:8080/"));
+        System.out.println(api.getLatestFile(412525, FileFilter.loader(ModLoader.FABRIC)));
+    }
     
     private static final Gson GSON;
     
@@ -66,6 +73,27 @@ public class CurseWrapper {
         ), json -> CurseWrapperJson.list(json, CurseWrapperJson::projectInfo));
     }
 
+    @Nullable
+    public FileInfo getLatestFile(int projectId) throws IOException {
+        return getLatestFile(projectId, FileFilter.empty());
+    }
+
+    @Nullable
+    public FileInfo getLatestFile(int projectId, FileFilter filter) throws IOException {
+        try {
+            return this.makeRequest("project/" + projectId + "/latest", Map.of(
+                    "loader", filter.loader().map(l -> l.id).orElse(""),
+                    "version", filter.gameVersion().orElse("")
+            ), CurseWrapperJson::fileInfo);
+        } catch (RequestException e) {
+            if (e.httpStatusCode == 204) {
+                return null;
+            } else {
+                throw e;
+            }
+        }
+    }
+    
     public List<FileInfo> getFiles(int projectId) throws IOException {
         return this.getFiles(projectId, FileFilter.empty());
     }
@@ -99,16 +127,12 @@ public class CurseWrapper {
     }
     
     private String makeRequest(String endpoint, String accept, Map<String, String> queryArgs) throws IOException {
-        try {
-            HttpRequest request = HttpRequest.newBuilder().GET()
-                    .uri(this.getUri(endpoint, queryArgs))
-                    .header("Accept", accept)
-                    .header("User-Agent", "Java" + System.getProperty("java.version") + "/CurseWrapper")
-                    .build();
-            return this.client.send(request, info -> HttpResponse.BodySubscribers.ofString(StandardCharsets.UTF_8)).body();
-        } catch (InterruptedException e) {
-            throw new IOException("Interrupted", e);
-        }
+        HttpRequest request = HttpRequest.newBuilder().GET()
+                .uri(this.getUri(endpoint, queryArgs))
+                .header("Accept", accept)
+                .header("User-Agent", "Java" + System.getProperty("java.version") + "/CurseWrapper")
+                .build();
+        return RequestException.send(client, request, HttpResponse.BodySubscribers.ofString(StandardCharsets.UTF_8)).body();
     }
     
     private URI getUri(String endpoint, Map<String, String> queryArgs) {
