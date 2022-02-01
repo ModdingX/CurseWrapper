@@ -10,7 +10,7 @@ import java.net.URI;
 
 public class ApiConverter {
 
-    private static final URI FALLBACK_LOGO = URI.create("https://singlecolorimage.com/get/e4e0e9/512x512");
+    private static final URI FALLBACK_LOGO = URI.create("https://singlecolorimage.com/get/e4e0e9/512x512.png");
     
     public static ProjectInfo project(ModResponse.Mod mod) {
         return new ProjectInfo(
