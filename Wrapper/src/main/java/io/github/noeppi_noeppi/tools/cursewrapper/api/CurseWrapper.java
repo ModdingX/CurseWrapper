@@ -6,7 +6,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import io.github.noeppi_noeppi.tools.cursewrapper.api.request.FileFilter;
 import io.github.noeppi_noeppi.tools.cursewrapper.api.response.FileInfo;
-import io.github.noeppi_noeppi.tools.cursewrapper.api.response.ModLoader;
 import io.github.noeppi_noeppi.tools.cursewrapper.api.response.ProjectInfo;
 
 import javax.annotation.Nullable;
@@ -24,11 +23,6 @@ import java.util.function.Function;
 
 public class CurseWrapper {
     
-    public static void main(String[] args) throws IOException {
-        CurseWrapper api = new CurseWrapper(URI.create("http://127.0.0.1:8080/"));
-        System.out.println(api.getLatestFile(412525, FileFilter.loader(ModLoader.FABRIC)));
-    }
-    
     private static final Gson GSON;
     
     static {
@@ -45,6 +39,10 @@ public class CurseWrapper {
         this.baseUri = baseUri;
     }
 
+    public String remoteVersion() throws IOException {
+        return this.makeStringRequest("version");
+    }
+    
     public String getSlug(int projectId) throws IOException {
         return this.makeStringRequest("slug/" + projectId);
     }
@@ -132,7 +130,7 @@ public class CurseWrapper {
                 .header("Accept", accept)
                 .header("User-Agent", "Java" + System.getProperty("java.version") + "/CurseWrapper")
                 .build();
-        return RequestException.send(client, request, HttpResponse.BodySubscribers.ofString(StandardCharsets.UTF_8)).body();
+        return RequestException.send(client, request, HttpResponse.BodySubscribers.ofString(StandardCharsets.UTF_8)).body().strip();
     }
     
     private URI getUri(String endpoint, Map<String, String> queryArgs) {

@@ -26,7 +26,8 @@ application.mainClassName = "io.github.noeppi_noeppi.tools.cursewrapper.Main"
 jar {
     manifest.attributes([
             "Main-Class": application.mainClassName,
-            "Automatic-Module-Name": "io.github.noeppi_noeppi.tools.cursewrapper.server"
+            "Automatic-Module-Name": "io.github.noeppi_noeppi.tools.cursewrapper.server",
+            "Implementation-Version": project.version
     ])
 }
 

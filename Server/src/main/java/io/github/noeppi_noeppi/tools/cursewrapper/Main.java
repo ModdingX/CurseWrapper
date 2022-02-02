@@ -11,15 +11,27 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.jar.Manifest;
 
 public class Main {
 
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
 
     public static void main(String[] args) throws IOException {
+        String version = null;
+        try(InputStream in = Main.class.getResourceAsStream("/META-INF/MANIFEST.MF")) {
+            if (in != null) {
+                Manifest manifest = new Manifest(in);
+                version = manifest.getMainAttributes().getValue("Implementation-Version");
+            }
+        } catch (Exception e) {
+            //
+        }
+        
         OptionParser options = new OptionParser(false);
         OptionSpec<Void> specDocker = options.accepts("docker", "Run in Docker mode. This will load secrets as docker secrets.");
 
@@ -40,6 +52,13 @@ public class Main {
                 .withRequiredArg().ofType(Integer.class).defaultsTo(Math.min(4, Runtime.getRuntime().availableProcessors()));
 
         OptionSet set = options.parse(args);
+        
+        if (version == null) {
+            logger.warn("Failed to detect version, falling back to 'UNKNOWN'");
+            version = "UNKNOWN";
+        } else {
+            logger.info("Running CurseWrapper v" + version);
+        }
 
         boolean docker = set.has(specDocker);
         boolean useSsl = !set.has(specNoSsl);
@@ -63,7 +82,7 @@ public class Main {
         CurseApi api = new CurseApi(token);
         api.testToken();
         CurseCache cache = new CurseCache(api);
-        CurseServer server = new CurseServer(port, ssl, set.valueOf(specThreads), cache);
+        CurseServer server = new CurseServer(version, port, ssl, set.valueOf(specThreads), cache);
         Runtime.getRuntime().addShutdownHook(new Thread(server::shutdown));
         logger.info("Initialisation done.");
     }

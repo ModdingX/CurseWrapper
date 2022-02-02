@@ -12,10 +12,12 @@ public class CurseServer {
     
     private static final Logger logger = LoggerFactory.getLogger(CurseServer.class);
     
+    private final String version;
     private final Service spark;
     
-    public CurseServer(int port, SslData ssl, int threads, CurseCache cache) {
+    public CurseServer(String version, int port, SslData ssl, int threads, CurseCache cache) {
         logger.info("Starting Server on port {}.", port);
+        this.version = version;
         this.spark = Service.ignite();
         this.spark.port(port);
         logger.info("Running on {} threads.", threads);
@@ -26,6 +28,7 @@ public class CurseServer {
             logger.warn("Running without SSL.");
         }
         
+        this.spark.get("/version", new VersionRoute(this.spark, cache, version));
         this.spark.get("/search", new SearchRoute(this.spark, cache));
         this.spark.get("/slug/:projectId", new SlugRoute(this.spark, cache));
         this.spark.get("/project/:projectId", new ProjectRoute(this.spark, cache));
@@ -37,7 +40,11 @@ public class CurseServer {
         this.spark.awaitInitialization();
         logger.info("Server started.");
     }
-    
+
+    public String version() {
+        return version;
+    }
+
     public void shutdown() {
         this.spark.stop();
     }
