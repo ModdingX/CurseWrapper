@@ -15,5 +15,5 @@ public abstract class TextRoute extends CurseRoute<String> {
     }
 
     @Override
-    protected abstract String apply(Request request, Response response) throws IOException;
+    protected abstract String apply(Request request, Response response, RouteData route) throws IOException;
 }

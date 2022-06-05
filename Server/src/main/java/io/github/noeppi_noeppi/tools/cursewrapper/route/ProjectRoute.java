@@ -18,7 +18,7 @@ public class ProjectRoute extends JsonRoute {
     }
 
     @Override
-    protected JsonElement apply(Request request, Response response) throws IOException {
+    protected JsonElement apply(Request request, Response response, RouteData route) throws IOException {
         return CurseWrapperJson.toJson(this.cache.get(CacheKey.PROJECT, this.integer(request, "projectId"), CommonCacheResolvers::project));
     }
 }

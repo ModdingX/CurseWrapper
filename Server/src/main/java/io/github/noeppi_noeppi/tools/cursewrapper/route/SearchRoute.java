@@ -16,15 +16,15 @@ import io.github.noeppi_noeppi.tools.cursewrapper.cache.CacheKey;
 import io.github.noeppi_noeppi.tools.cursewrapper.cache.CacheUtils;
 import io.github.noeppi_noeppi.tools.cursewrapper.cache.CurseCache;
 import io.github.noeppi_noeppi.tools.cursewrapper.convert.ApiConverter;
+import io.github.noeppi_noeppi.tools.cursewrapper.convert.GameVersionProcessor;
 import io.github.noeppi_noeppi.tools.cursewrapper.route.base.JsonRoute;
 import spark.Request;
 import spark.Response;
 import spark.Service;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class SearchRoute extends JsonRoute {
     
@@ -33,7 +33,7 @@ public class SearchRoute extends JsonRoute {
     }
 
     @Override
-    protected JsonElement apply(Request request, Response response) throws IOException {
+    protected JsonElement apply(Request request, Response response, RouteData route) throws IOException {
         String query = request.queryParams("query");
         if (query == null) query = "";
 
@@ -67,9 +67,10 @@ public class SearchRoute extends JsonRoute {
     }
     
     private ResolveData resolvePartial(CurseApi api, CacheKey.SearchKey key, int current, int left) throws IOException {
-        // The modLoaderType parameter only works if gameVersion is present
-        // and using a loader as game version does not work.
-        boolean needsManualLoaderFiltering = key.loader().isPresent() && key.version().isEmpty();
+        Set<ModLoaderType> loaders = key.loader().isPresent() ? GameVersionProcessor.forLoader(key.loader().get()) : Set.of();
+        // The modLoaderType parameter only works if gameVersion is present and using a loader as game version does not work.
+        // Also if reversing the loader yields multiple loader types, it needs to be manually filtered
+        boolean needsManualLoaderFiltering = loaders.size() > 1 || (loaders.size() == 1 && key.version().isEmpty());
         
         Multimap<String, String> params = ArrayListMultimap.create();
         params.put("gameId", Integer.toString(CurseApi.MINECRAFT_GAME));
@@ -82,14 +83,14 @@ public class SearchRoute extends JsonRoute {
         if (key.version().isPresent()) {
             params.put("gameVersion", key.version().get());
         }
-        if (key.loader().isPresent() && !needsManualLoaderFiltering) {
-            params.put("modLoaderType", Integer.toString(ModLoaderType.reverse(key.loader().get()).ordinal()));
+        if (loaders.size() == 1 && !needsManualLoaderFiltering) {
+            params.put("modLoaderType", Integer.toString(loaders.iterator().next().ordinal()));
         }
         ModSearchResponse resp = api.request("mods/search", params, ModSearchResponse.class);
         List<Integer> ids = new ArrayList<>();
         for (ModResponse.Mod mod : resp.data) {
             if (ids.size() >= left) break;
-            if (!needsManualLoaderFiltering || this.checkLoader(mod, key.loader().get())) {
+            if (!needsManualLoaderFiltering || this.checkLoader(mod, key.version().orElse(null), loaders)) {
                 ids.add(mod.id);
                 this.cache.store(CacheKey.PROJECT, mod.id, ApiConverter.project(mod));
             }
@@ -101,15 +102,15 @@ public class SearchRoute extends JsonRoute {
         );
     }
     
-    private boolean checkLoader(ModResponse.Mod mod, ModLoader loader) {
-        ModLoaderType type = ModLoaderType.reverse(loader);
-        
+    private boolean checkLoader(ModResponse.Mod mod, @Nullable String gameVersion, Set<ModLoaderType> loaders) {
+        System.err.println(mod.name + " " + gameVersion + " " + loaders);
         // Check the latest files for a file matching the loader.
-        // We never need to pay attention to game versions here as no game version filter will
-        // ever be set whn this is called.
         
         //noinspection RedundantIfStatement
-        if (mod.latestFilesIndexes.stream().anyMatch(file -> file.modLoader == type)) return true;
+        if (mod.latestFilesIndexes.stream()
+                .filter(file -> gameVersion == null || gameVersion.equals(file.gameVersion))
+                .anyMatch(file -> loaders.contains(file.modLoader))
+        ) return true;
         
         // We have no efficient way to solve the problem now, as we can't be sure about the loader.
         // Also, the API does not allow filtering by loader when retrieving mod files.

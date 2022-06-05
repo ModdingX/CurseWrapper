@@ -28,7 +28,7 @@ public class LatestFileRoute extends JsonRoute {
     }
 
     @Override
-    protected JsonElement apply(Request request, Response response) throws IOException {
+    protected JsonElement apply(Request request, Response response, RouteData route) throws IOException {
         Optional<ModLoader> loader = Optional.ofNullable(request.queryParams("loader")).map(ModLoader::get);
         Optional<String> version = Optional.ofNullable(request.queryParams("version"));
         CacheKey.FilesKey key = new CacheKey.FilesKey(this.integer(request, "projectId"), loader, version);

@@ -16,7 +16,8 @@ public class SlugRoute extends TextRoute {
     }
 
     @Override
-    protected String apply(Request request, Response response) throws IOException {
+    protected String apply(Request request, Response response, RouteData route) throws IOException {
+        route.allowCaching();
         return this.cache.get(CacheKey.SLUG, this.integer(request, "projectId"), CommonCacheResolvers::slug);
     }
 }

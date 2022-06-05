@@ -10,7 +10,8 @@ public enum ModLoader {
     FABRIC,
     LITE_LOADER,
     RIFT,
-    CAULDRON;
+    CAULDRON,
+    QUILT;
     
     public final String id;
 

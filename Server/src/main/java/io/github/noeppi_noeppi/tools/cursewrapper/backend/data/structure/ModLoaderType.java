@@ -9,6 +9,7 @@ public enum ModLoaderType implements CurseEnum {
     CAULDRON(ModLoader.CAULDRON),
     LITE_LOADER(ModLoader.LITE_LOADER),
     FABRIC(ModLoader.FABRIC),
+    QUILT(ModLoader.QUILT),
     OTHER(ModLoader.UNKNOWN, "other");
     
     public final ModLoader loader;
@@ -21,16 +22,5 @@ public enum ModLoaderType implements CurseEnum {
     ModLoaderType(ModLoader loader, String id) {
         this.loader = loader;
         this.id = id;
-    }
-    
-    // Never return other as this is passed to the CurseForge API
-    // which does not know about OTHER
-    public static ModLoaderType reverse(ModLoader loader) {
-        for (ModLoaderType type : values()) {
-            if (type != OTHER && loader == type.loader) {
-                return type;
-            }
-        }
-        return ANY;
     }
 }

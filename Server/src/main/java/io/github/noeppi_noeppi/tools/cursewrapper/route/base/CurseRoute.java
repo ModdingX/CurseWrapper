@@ -27,10 +27,14 @@ public abstract class CurseRoute<T> implements Route {
     @Override
     public final Object handle(Request request, Response response) throws Exception {
         try {
-            String result = this.resultFunc.apply(this.apply(request, response));
+            RouteData data = new RouteData();
+            String result = this.resultFunc.apply(this.apply(request, response, data));
             response.status(result == null ? 204 : 200);
             if (result != null) {
                 response.header("Content-Type", this.content);
+                if (!data.cache) {
+                    response.header("Cache-Control", "no-cache");
+                }
             }
             return result;
         } catch (FileNotFoundException e) {
@@ -38,7 +42,7 @@ public abstract class CurseRoute<T> implements Route {
         }
     }
     
-    protected abstract T apply(Request request, Response response) throws IOException;
+    protected abstract T apply(Request request, Response response, RouteData route) throws IOException;
     
     protected final int integer(Request request, String key) {
         try {
@@ -55,4 +59,18 @@ public abstract class CurseRoute<T> implements Route {
         }
         return value;
     }
+    
+    public static class RouteData {
+        
+        private boolean cache;
+        
+        private RouteData() {
+            this.cache = false;
+        }
+        
+        public void allowCaching() {
+            this.cache = true;
+        }
+    }
 }
+

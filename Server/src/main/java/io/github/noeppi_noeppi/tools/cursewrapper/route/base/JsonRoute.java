@@ -25,5 +25,5 @@ public abstract class JsonRoute extends CurseRoute<JsonElement> {
     }
 
     @Override
-    protected abstract JsonElement apply(Request request, Response response) throws IOException;
+    protected abstract JsonElement apply(Request request, Response response, RouteData route) throws IOException;
 }

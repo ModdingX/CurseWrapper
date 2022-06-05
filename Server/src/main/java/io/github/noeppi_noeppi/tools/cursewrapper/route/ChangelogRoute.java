@@ -18,7 +18,7 @@ public class ChangelogRoute extends TextRoute {
     }
 
     @Override
-    protected String apply(Request request, Response response) throws IOException {
+    protected String apply(Request request, Response response, RouteData route) throws IOException {
         return this.cache.get(CacheKey.CHANGELOG, new CacheKey.FileKey(this.integer(request, "projectId"), this.integer(request, "fileId")), this::resolve);
     }
 

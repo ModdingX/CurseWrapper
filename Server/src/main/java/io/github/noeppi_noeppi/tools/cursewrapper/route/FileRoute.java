@@ -18,7 +18,7 @@ public class FileRoute extends JsonRoute {
     }
 
     @Override
-    protected JsonElement apply(Request request, Response response) throws IOException {
+    protected JsonElement apply(Request request, Response response, RouteData route) throws IOException {
         return CurseWrapperJson.toJson(this.cache.get(CacheKey.FILE, new CacheKey.FileKey(this.integer(request, "projectId"), this.integer(request, "fileId")), CommonCacheResolvers::file));
     }
 }
