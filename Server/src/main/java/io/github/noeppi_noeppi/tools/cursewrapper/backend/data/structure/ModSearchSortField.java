@@ -1,7 +1,8 @@
 package io.github.noeppi_noeppi.tools.cursewrapper.backend.data.structure;
 
 public enum ModSearchSortField implements CurseEnum {
-
+    
+    OTHER("other"),
     FEATURED("featured"),
     POPULARITY("popularity"),
     LAST_UPDATED("last_updated"),

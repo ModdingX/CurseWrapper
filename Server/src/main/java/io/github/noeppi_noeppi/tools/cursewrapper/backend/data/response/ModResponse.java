@@ -40,8 +40,9 @@ public class ModResponse implements CurseData {
         @Expose public Date dateCreated;
         @Expose public Date dateModified;
         @Expose public Date dateReleased;
+        @Expose @Nullable public Boolean allowModDistribution;
 
-        public Mod(int id, int gameId, String slug, String name, Links links, String summary, ModStatus status, int downloadCount, boolean isFeatured, int primaryCategoryId, List<CategoriesResponse.Category> categories, List<Author> authors, @Nullable Logo logo, List<Screenshot> screenshots, int mainFileId, List<ModFileResponse.ModFile> latestFiles, List<LatestFileIndex> latestFilesIndexes, Date dateCreated, Date dateModified, Date dateReleased) {
+        public Mod(int id, int gameId, String slug, String name, Links links, String summary, ModStatus status, int downloadCount, boolean isFeatured, int primaryCategoryId, List<CategoriesResponse.Category> categories, List<Author> authors, @Nullable Logo logo, List<Screenshot> screenshots, int mainFileId, List<ModFileResponse.ModFile> latestFiles, List<LatestFileIndex> latestFilesIndexes, Date dateCreated, Date dateModified, Date dateReleased, boolean allowModDistribution) {
             this.id = id;
             this.gameId = gameId;
             this.slug = slug;
@@ -62,6 +63,7 @@ public class ModResponse implements CurseData {
             this.dateCreated = dateCreated;
             this.dateModified = dateModified;
             this.dateReleased = dateReleased;
+            this.allowModDistribution = allowModDistribution;
         }
     }
     

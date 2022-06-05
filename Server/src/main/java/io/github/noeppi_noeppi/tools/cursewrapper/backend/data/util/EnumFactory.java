@@ -8,6 +8,7 @@ import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
+import io.github.noeppi_noeppi.tools.cursewrapper.backend.data.structure.CurseEnum;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -23,7 +24,7 @@ public class EnumFactory implements TypeAdapterFactory {
     @Override
     @Nullable
     public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-        if (type.getRawType().isEnum()) {
+        if (type.getRawType().isEnum() && CurseEnum.class.isAssignableFrom(type.getRawType())) {
             //noinspection unchecked,rawtypes
             return (TypeAdapter<T>) this.instances.computeIfAbsent(type.getRawType(), cls -> new EnumAdapter<>((Class<Enum>) cls));
         } else {

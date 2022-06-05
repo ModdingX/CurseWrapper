@@ -74,6 +74,7 @@ public class CurseWrapperJson {
         json.addProperty("name", project.name());
         json.addProperty("owner", project.owner());
         json.addProperty("summary", project.summary());
+        json.addProperty("distribution", project.distribution());
         json.addProperty("website", project.website().toString());
         json.addProperty("thumbnail", project.thumbnail().toString());
         return json;
@@ -86,9 +87,10 @@ public class CurseWrapperJson {
         String name = obj.get("name").getAsString();
         String owner = obj.get("owner").getAsString();
         String summary = obj.get("summary").getAsString();
+        boolean distribution = obj.get("distribution").getAsBoolean();
         URI website = URI.create(obj.get("website").getAsString());
         URI thumbnail = URI.create(obj.get("thumbnail").getAsString());
-        return new ProjectInfo(projectId, slug, name, owner, summary, website, thumbnail);
+        return new ProjectInfo(projectId, slug, name, owner, summary, distribution, website, thumbnail);
     }
 
     public static <T> JsonArray array(List<T> values, Function<? super T, ? extends JsonElement> mapper) {

@@ -10,6 +10,7 @@ public final class ProjectInfo {
     private final String name;
     private final String owner;
     private final String summary;
+    private final boolean distribution;
     private final URI website;
     private final URI thumbnail;
 
@@ -19,6 +20,7 @@ public final class ProjectInfo {
             String name,
             String owner,
             String summary,
+            boolean distribution,
             URI website,
             URI thumbnail
     ) {
@@ -27,6 +29,7 @@ public final class ProjectInfo {
         this.name = name;
         this.owner = owner;
         this.summary = summary;
+        this.distribution = distribution;
         this.website = website;
         this.thumbnail = thumbnail;
     }
@@ -51,6 +54,10 @@ public final class ProjectInfo {
         return summary;
     }
 
+    public boolean distribution() {
+        return distribution;
+    }
+
     public URI website() {
         return website;
     }
@@ -69,6 +76,7 @@ public final class ProjectInfo {
                 Objects.equals(this.name, that.name) &&
                 Objects.equals(this.owner, that.owner) &&
                 Objects.equals(this.summary, that.summary) &&
+                Objects.equals(this.distribution, that.distribution) &&
                 Objects.equals(this.website, that.website) &&
                 Objects.equals(this.thumbnail, that.thumbnail);
     }
@@ -86,6 +94,7 @@ public final class ProjectInfo {
                 "name=" + name + ", " +
                 "owner=" + owner + ", " +
                 "summary=" + summary + ", " +
+                "distributionEnabled=" + distribution + ", " +
                 "website=" + website + ", " +
                 "thumbnail=" + thumbnail + ']';
     }

@@ -103,7 +103,6 @@ public class SearchRoute extends JsonRoute {
     }
     
     private boolean checkLoader(ModResponse.Mod mod, @Nullable String gameVersion, Set<ModLoaderType> loaders) {
-        System.err.println(mod.name + " " + gameVersion + " " + loaders);
         // Check the latest files for a file matching the loader.
         
         //noinspection RedundantIfStatement
