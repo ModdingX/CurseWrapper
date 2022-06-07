@@ -21,12 +21,12 @@ sourceSets {
     }
 }
 
-application.mainClassName = "io.github.noeppi_noeppi.tools.cursewrapper.Main"
+application.mainClassName = "org.moddingx.cursewrapper.Main"
 
 jar {
     manifest.attributes([
             "Main-Class": application.mainClassName,
-            "Automatic-Module-Name": "io.github.noeppi_noeppi.tools.cursewrapper.server",
+            "Automatic-Module-Name": "org.moddingx.cursewrapper.server",
             "Implementation-Version": project.version
     ])
 }

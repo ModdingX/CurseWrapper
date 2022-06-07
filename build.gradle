@@ -1,7 +1,7 @@
 subprojects {
     apply plugin: 'java-library'
     
-    group 'io.github.noeppi_noeppi.tools'
+    group 'org.moddingx'
 
     repositories {
         mavenCentral()

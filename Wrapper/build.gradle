@@ -4,7 +4,7 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(11)
 
 jar {
     manifest.attributes([
-            "Automatic-Module-Name": "io.github.noeppi_noeppi.tools.cursewrapper",
+            "Automatic-Module-Name": "org.moddingx.cursewrapper",
             "Implementation-Version": project.version
     ])
 }
