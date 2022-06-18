@@ -16,10 +16,9 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class CurseWrapper {
     
@@ -49,6 +48,16 @@ public class CurseWrapper {
     
     public ProjectInfo getProject(int projectId) throws IOException {
         return this.makeRequest("project/" + projectId, CurseWrapperJson::projectInfo);
+    }
+    
+    public Map<Integer, ProjectInfo> getProjects(Set<Integer> projects) throws IOException {
+        String body = projects.stream().map(Objects::toString).collect(Collectors.joining(",", "[", "]"));
+        return this.makeRequest("projects", Map.of(), body, json -> json.getAsJsonObject()
+                .entrySet().stream()
+                .map(Map.Entry::getValue)
+                .map(CurseWrapperJson::projectInfo)
+                .collect(Collectors.toUnmodifiableMap(ProjectInfo::projectId, Function.identity()))
+        );
     }
     
     public FileInfo getFile(int projectId, int fileId) throws IOException {
@@ -108,7 +117,11 @@ public class CurseWrapper {
     }
     
     private <T> T makeRequest(String endpoint, Map<String, String> queryArgs, Function<JsonElement, T> mapper) throws IOException {
-        String data = this.makeRequest(endpoint, "application/json", queryArgs);
+        return this.makeRequest(endpoint, queryArgs, null, mapper);
+    }
+    
+    private <T> T makeRequest(String endpoint, Map<String, String> queryArgs, @Nullable String body, Function<JsonElement, T> mapper) throws IOException {
+        String data = this.makeRequest(endpoint, "application/json", queryArgs, body);
         try {
             return mapper.apply(GSON.fromJson(data, JsonElement.class));
         } catch (JsonParseException | ClassCastException | NoSuchElementException | IllegalStateException e) {
@@ -124,9 +137,19 @@ public class CurseWrapper {
         return this.makeRequest(endpoint, "text/plain", queryArgs);
     }
     
+    @SuppressWarnings("SameParameterValue")
     private String makeRequest(String endpoint, String accept, Map<String, String> queryArgs) throws IOException {
-        HttpRequest request = HttpRequest.newBuilder().GET()
-                .uri(this.getUri(endpoint, queryArgs))
+        return this.makeRequest(endpoint, accept, queryArgs, null);
+    }
+    
+    private String makeRequest(String endpoint, String accept, Map<String, String> queryArgs, @Nullable String body) throws IOException {
+        HttpRequest.Builder builder;
+        if (body == null) {
+            builder = HttpRequest.newBuilder().GET();
+        } else {
+            builder = HttpRequest.newBuilder().method("GET", HttpRequest.BodyPublishers.ofString(body));
+        }
+        HttpRequest request = builder.uri(this.getUri(endpoint, queryArgs))
                 .header("Accept", accept)
                 .header("User-Agent", "Java" + System.getProperty("java.version") + "/CurseWrapper")
                 .build();

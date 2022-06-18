@@ -44,7 +44,6 @@ public class FilesRoute extends JsonRoute {
             for (FileInfo file : files) {
                 json.add(CurseWrapperJson.toJson(file));
             }
-
             return json;
         });
     }
