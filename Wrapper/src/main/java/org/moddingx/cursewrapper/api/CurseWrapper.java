@@ -35,7 +35,7 @@ public class CurseWrapper {
 
     public CurseWrapper(URI baseUri) {
         this.client = HttpClient.newHttpClient();
-        this.baseUri = baseUri;
+        this.baseUri = Objects.requireNonNull(baseUri, "Null URI in CurseWrapper");
     }
 
     public String remoteVersion() throws IOException {
