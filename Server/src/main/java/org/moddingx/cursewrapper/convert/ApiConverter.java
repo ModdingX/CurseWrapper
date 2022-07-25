@@ -7,6 +7,10 @@ import org.moddingx.cursewrapper.backend.data.response.ModFileResponse;
 import org.moddingx.cursewrapper.backend.data.response.ModResponse;
 
 import java.net.URI;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 public class ApiConverter {
 
@@ -24,11 +28,21 @@ public class ApiConverter {
         GameVersionProcessor.GameVersionData versionData = GameVersionProcessor.data(file.gameVersions);
         return new FileInfo(
                 file.modId, file.id, file.fileName, versionData.loader(), versionData.versions(), file.releaseType.type,
-                file.fileDate.toInstant(), file.dependencies.stream().map(ApiConverter::dependency).toList()
+                file.fileDate.toInstant(), file.fileLength, file.fileFingerprint,
+                file.dependencies.stream().map(ApiConverter::dependency).toList(),
+                hashes(file.hashes)
         );
     }
 
     public static Dependency dependency(ModFileResponse.Dependency dependency) {
         return new Dependency(dependency.relationType.type, dependency.modId);
+    }
+
+    public static Map<String, String> hashes(List<ModFileResponse.FileHash> hashes) {
+        Map<String, String> map = new HashMap<>();
+        for (ModFileResponse.FileHash hash : hashes) {
+            map.put(hash.algo.id.toLowerCase(Locale.ROOT), hash.value.toLowerCase(Locale.ROOT));
+        }
+        return Map.copyOf(map);
     }
 }

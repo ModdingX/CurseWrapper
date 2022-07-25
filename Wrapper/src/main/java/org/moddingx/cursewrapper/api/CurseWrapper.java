@@ -112,6 +112,11 @@ public class CurseWrapper {
         ), json -> CurseWrapperJson.list(json, CurseWrapperJson::fileInfo));
     }
     
+    public List<FileInfo> matchFingerprints(Set<Long> fingerprints) throws IOException {
+        String body = fingerprints.stream().map(Objects::toString).collect(Collectors.joining(",", "[", "]"));
+        return this.makeRequest("fingerprints", Map.of(), body, json -> CurseWrapperJson.list(json, CurseWrapperJson::fileInfo));
+    }
+    
     private <T> T makeRequest(String endpoint, Function<JsonElement, T> mapper) throws IOException {
         return this.makeRequest(endpoint, Map.of(), mapper);
     }

@@ -1,4 +1,15 @@
 subprojects {
+    buildscript {
+        repositories {
+            maven { url = 'https://maven.moddingx.org' }
+            maven { url = 'file:///home/tux/dev/util/moddingx/maven' }
+            mavenCentral()
+        }
+        dependencies {
+            classpath 'org.moddingx:LegacyJavaConverter:1.0.0'
+        }
+    }
+    
     apply plugin: 'java-library'
     
     group 'org.moddingx'

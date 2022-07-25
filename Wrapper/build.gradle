@@ -1,6 +1,7 @@
 apply plugin: 'maven-publish'
+apply plugin: 'org.moddingx.lcj'
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(11)
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 jar {
     manifest.attributes([
@@ -8,6 +9,13 @@ jar {
             "Implementation-Version": project.version
     ])
 }
+
+// Check, that LJC can convert to java 11 (required for Moonstone)
+task legacyJar(type: org.moddingx.ljc.gradle.LjcTask) {
+    input = jar.archiveFile
+    languageLevel = 11
+}
+jar.finalizedBy legacyJar
 
 task sourcesJar(type: Jar) {
     classifier 'sources'

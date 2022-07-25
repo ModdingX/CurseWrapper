@@ -37,6 +37,7 @@ public class CurseServer {
         this.spark.get("/project/:projectId/file/:fileId", new FileRoute(this.spark, cache));
         this.spark.get("/project/:projectId/changelog/:fileId", new ChangelogRoute(this.spark, cache));
         this.spark.get("/projects", new ProjectsRoute(this.spark, cache));
+        this.spark.get("/fingerprints", new FingerprintsRoute(this.spark, cache));
         
         this.spark.awaitInitialization();
         logger.info("Server started.");

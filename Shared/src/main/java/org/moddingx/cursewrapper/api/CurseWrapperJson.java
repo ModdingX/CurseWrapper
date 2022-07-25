@@ -10,7 +10,9 @@ import java.math.BigInteger;
 import java.net.URI;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 public class CurseWrapperJson {
@@ -50,7 +52,10 @@ public class CurseWrapperJson {
         json.add("versions", array(file.gameVersions(), JsonPrimitive::new));
         json.addProperty("release", file.releaseType().id);
         json.add("date", toJson(file.fileDate()));
+        json.addProperty("size", file.fileSize());
+        json.addProperty("fingerprint", file.fingerprint());
         json.add("dependencies", array(file.dependencies(), CurseWrapperJson::toJson));
+        json.add("hashes", object(file.hashes(), JsonPrimitive::new));
         return json;
     }
     
@@ -63,8 +68,11 @@ public class CurseWrapperJson {
         List<String> versions = list(obj.get("versions"), JsonElement::getAsString);
         ReleaseType release = ReleaseType.get(obj.get("release").getAsString());
         Instant date = instant(obj.get("date"));
+        long fileSize = obj.get("size").getAsLong();
+        long fingerprint = obj.get("fingerprint").getAsLong();
         List<Dependency> dependencies = list(obj.get("dependencies"), CurseWrapperJson::dependency);
-        return new FileInfo(projectId, fileId, name, loader, versions, release, date, dependencies);
+        Map<String, String> hashes = map(obj.get("hashes"), JsonElement::getAsString);
+        return new FileInfo(projectId, fileId, name, loader, versions, release, date, fileSize, fingerprint, dependencies, hashes);
     }
     
     public static JsonElement toJson(ProjectInfo project) {
@@ -101,11 +109,27 @@ public class CurseWrapperJson {
         return array;
     }
 
+    public static <T> JsonObject object(Map<String, T> map, Function<? super T, ? extends JsonElement> mapper) {
+        JsonObject obj = new JsonObject();
+        for (Map.Entry<String, T> entry : map.entrySet()) {
+            obj.add(entry.getKey(), mapper.apply(entry.getValue()));
+        }
+        return obj;
+    }
+
     public static <T> List<T> list(JsonElement json, Function<? super JsonElement, ? extends T> mapper) {
         List<T> list = new ArrayList<>();
         for (JsonElement elem : json.getAsJsonArray()) {
             list.add(mapper.apply(elem));
         }
         return List.copyOf(list);
+    }
+
+    public static <T> Map<String, T> map(JsonElement json, Function<? super JsonElement, ? extends T> mapper) {
+        Map<String, T> map = new HashMap<>();
+        for (Map.Entry<String, JsonElement> entry : json.getAsJsonObject().entrySet()) {
+            map.put(entry.getKey(), mapper.apply(entry.getValue()));
+        }
+        return Map.copyOf(map);
     }
 }

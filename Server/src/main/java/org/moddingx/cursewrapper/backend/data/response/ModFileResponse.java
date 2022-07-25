@@ -31,7 +31,7 @@ public class ModFileResponse implements CurseData {
         @Expose public FileStatus fileStatus;
         @Expose public List<FileHash> hashes;
         @Expose public Date fileDate;
-        @Expose public int fileLength;
+        @Expose public long fileLength;
         @Expose public int downloadCount;
         @Expose public String downloadUrl;
         @Expose public List<String> gameVersions;

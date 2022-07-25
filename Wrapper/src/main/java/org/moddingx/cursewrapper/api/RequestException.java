@@ -23,8 +23,8 @@ public class RequestException extends IOException {
         } catch (RequestExceptionWrapper e) {
             throw e.exception;
         } catch (IOException e) {
-            if (e.getCause() instanceof RequestExceptionWrapper) {
-                throw ((RequestExceptionWrapper) e.getCause()).exception;
+            if (e.getCause() instanceof RequestExceptionWrapper wrapper) {
+                throw wrapper.exception;
             } else {
                 throw e;
             }
