@@ -28,7 +28,7 @@ public class ApiConverter {
         GameVersionProcessor.GameVersionData versionData = GameVersionProcessor.data(file.gameVersions);
         return new FileInfo(
                 file.modId, file.id, file.fileName, versionData.loader(), versionData.versions(), file.releaseType.type,
-                file.fileDate.toInstant(), file.fileLength, file.fileFingerprint,
+                versionData.environment(), file.fileDate.toInstant(), file.fileLength, file.fileFingerprint,
                 file.dependencies.stream().map(ApiConverter::dependency).toList(),
                 hashes(file.hashes)
         );

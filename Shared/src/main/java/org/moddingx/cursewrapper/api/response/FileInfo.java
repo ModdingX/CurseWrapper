@@ -11,6 +11,7 @@ public record FileInfo(
         List<ModLoader> loader,
         List<String> gameVersions,
         ReleaseType releaseType,
+        FileEnvironment environment,
         Instant fileDate,
         long fileSize,
         long fingerprint,

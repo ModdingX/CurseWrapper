@@ -1,5 +1,6 @@
 package org.moddingx.cursewrapper.convert;
 
+import org.moddingx.cursewrapper.api.response.FileEnvironment;
 import org.moddingx.cursewrapper.api.response.ModLoader;
 import org.moddingx.cursewrapper.backend.data.structure.ModLoaderType;
 
@@ -12,6 +13,8 @@ public class GameVersionProcessor {
     public static GameVersionData data(List<String> gameVersions) {
         Set<ModLoader> loaders = new HashSet<>();
         Set<String> versions = new HashSet<>();
+        boolean client = false;
+        boolean server = false;
         for (String str : gameVersions) {
             switch (str.toLowerCase(Locale.ROOT)) {
                 case "forge", "minecraftforge", "minecraft_forge" -> loaders.add(ModLoader.FORGE);
@@ -20,6 +23,8 @@ public class GameVersionProcessor {
                 case "liteloader", "lite_loader" -> loaders.add(ModLoader.LITE_LOADER);
                 case "cauldron" -> loaders.add(ModLoader.CAULDRON);
                 case "quilt" -> loaders.add(ModLoader.QUILT);
+                case "client" -> client = true;
+                case "server" -> server = true;
                 default -> versions.add(str);
             }
         }
@@ -31,7 +36,11 @@ public class GameVersionProcessor {
         // Quilt can load fabric mods
         if (loaders.contains(ModLoader.FABRIC)) loaders.add(ModLoader.QUILT);
         
-        return new GameVersionData(loaders.stream().sorted().toList(), versions.stream().sorted().toList());
+        FileEnvironment environment = FileEnvironment.BOTH;
+        if (client && !server) environment = FileEnvironment.CLIENT;
+        if (server && !client) environment = FileEnvironment.SERVER;
+        
+        return new GameVersionData(loaders.stream().sorted().toList(), versions.stream().sorted().toList(), environment);
     }
 
     public static boolean check(List<String> gameVersions, @Nullable ModLoader loader, @Nullable String version) {
@@ -55,5 +64,5 @@ public class GameVersionProcessor {
         return Set.of();
     }
 
-    public record GameVersionData(List<ModLoader> loader, List<String> versions) {}
+    public record GameVersionData(List<ModLoader> loader, List<String> versions, FileEnvironment environment) {}
 }

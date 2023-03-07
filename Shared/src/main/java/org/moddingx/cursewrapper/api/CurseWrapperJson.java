@@ -51,6 +51,7 @@ public class CurseWrapperJson {
         json.add("loader", array(file.loader(), l -> new JsonPrimitive(l.id)));
         json.add("versions", array(file.gameVersions(), JsonPrimitive::new));
         json.addProperty("release", file.releaseType().id);
+        json.addProperty("environment", file.environment().id);
         json.add("date", toJson(file.fileDate()));
         json.addProperty("size", file.fileSize());
         json.addProperty("fingerprint", file.fingerprint());
@@ -67,12 +68,13 @@ public class CurseWrapperJson {
         List<ModLoader> loader = list(obj.get("loader"), j -> ModLoader.get(j.getAsString()));
         List<String> versions = list(obj.get("versions"), JsonElement::getAsString);
         ReleaseType release = ReleaseType.get(obj.get("release").getAsString());
+        FileEnvironment environment = FileEnvironment.get(obj.get("environment").getAsString());
         Instant date = instant(obj.get("date"));
         long fileSize = obj.get("size").getAsLong();
         long fingerprint = obj.get("fingerprint").getAsLong();
         List<Dependency> dependencies = list(obj.get("dependencies"), CurseWrapperJson::dependency);
         Map<String, String> hashes = map(obj.get("hashes"), JsonElement::getAsString);
-        return new FileInfo(projectId, fileId, name, loader, versions, release, date, fileSize, fingerprint, dependencies, hashes);
+        return new FileInfo(projectId, fileId, name, loader, versions, release, environment, date, fileSize, fingerprint, dependencies, hashes);
     }
     
     public static JsonElement toJson(ProjectInfo project) {
