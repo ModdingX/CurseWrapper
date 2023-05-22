@@ -1,5 +1,5 @@
 apply plugin: 'maven-publish'
-apply plugin: 'org.moddingx.lcj'
+apply plugin: 'org.moddingx.ljc'
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
@@ -18,7 +18,7 @@ task legacyJar(type: org.moddingx.ljc.gradle.LjcTask) {
 jar.finalizedBy legacyJar
 
 task sourcesJar(type: Jar) {
-    classifier 'sources'
+    archiveClassifier = 'sources'
     from sourceSets.main.allSource
     from project(':CurseWrapperShared').sourceSets.main.allSource
 }

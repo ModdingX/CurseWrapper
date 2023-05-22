@@ -2,11 +2,10 @@ subprojects {
     buildscript {
         repositories {
             maven { url = 'https://maven.moddingx.org' }
-            maven { url = 'file:///home/tux/dev/util/moddingx/maven' }
             mavenCentral()
         }
         dependencies {
-            classpath 'org.moddingx:LegacyJavaConverter:1.0.0'
+            classpath 'org.moddingx:LegacyJavaConverter:1.1.0'
         }
     }
     
@@ -22,11 +21,13 @@ subprojects {
         project.afterEvaluate {
             configurations {
                 api.extendsFrom(project(':CurseWrapperShared').configurations.api)
+                local // Needed, so shared does not show up in the POM
+                compileClasspath.extendsFrom(local)
+                runtimeClasspath.extendsFrom(local)
             }
             
             dependencies {
-                compileClasspath project(':CurseWrapperShared')
-                runtimeClasspath project(':CurseWrapperShared')
+                local project(':CurseWrapperShared')
             }
             
             jar {

@@ -7,11 +7,11 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 dependencies {
     implementation 'net.sf.jopt-simple:jopt-simple:5.0.4'
-    implementation 'com.sparkjava:spark-core:2.9.3'
+    implementation 'com.sparkjava:spark-core:2.9.4'
     implementation 'com.google.guava:guava:31.1-jre'
     
-    implementation 'org.slf4j:slf4j-api:1.7.36'
-    runtimeOnly 'org.slf4j:slf4j-jdk14:1.7.36'
+    implementation 'org.slf4j:slf4j-api:2.0.7'
+    runtimeOnly 'org.slf4j:slf4j-jdk14:2.0.7'
 }
 
 sourceSets {
@@ -21,11 +21,11 @@ sourceSets {
     }
 }
 
-application.mainClassName = "org.moddingx.cursewrapper.Main"
+application.mainClass = "org.moddingx.cursewrapper.Main"
 
 jar {
     manifest.attributes([
-            "Main-Class": application.mainClassName,
+            "Main-Class": application.mainClass.get(),
             "Automatic-Module-Name": "org.moddingx.cursewrapper.server",
             "Implementation-Version": project.version
     ])
@@ -56,7 +56,7 @@ task dockerZip(type: Zip) {
     dependsOn jar
     dependsOn collectDependencies
     
-    classifier 'docker'
+    archiveClassifier = 'docker'
     
     from(jar.archiveFile, { rename { 'server.jar' } })
     from(project.file('build/deps.txt'), { rename { 'deps.txt' } })
