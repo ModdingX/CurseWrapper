@@ -74,9 +74,9 @@ public class CurseWrapper {
 
     public List<ProjectInfo> searchMods(String query, FileFilter filter) throws IOException {
         return this.makeRequest("search", Map.of(
-                "query", query,
-                "loader", filter.loader().map(l -> l.id).orElse(""),
-                "version", filter.gameVersion().orElse("")
+                "query", List.of(query),
+                "version", filter.gameVersion().stream().toList(),
+                "loader", filter.loaders().stream().map(l -> l.id).toList()
         ), json -> CurseWrapperJson.list(json, CurseWrapperJson::projectInfo));
     }
 
@@ -89,8 +89,8 @@ public class CurseWrapper {
     public FileInfo getLatestFile(int projectId, FileFilter filter) throws IOException {
         try {
             return this.makeRequest("project/" + projectId + "/latest", Map.of(
-                    "loader", filter.loader().map(l -> l.id).orElse(""),
-                    "version", filter.gameVersion().orElse("")
+                    "version", filter.gameVersion().stream().toList(),
+                    "loader", filter.loaders().stream().map(l -> l.id).toList()
             ), CurseWrapperJson::fileInfo);
         } catch (RequestException e) {
             if (e.httpStatusCode == 204) {
@@ -107,8 +107,8 @@ public class CurseWrapper {
     
     public List<FileInfo> getFiles(int projectId, FileFilter filter) throws IOException {
         return this.makeRequest("project/" + projectId + "/files", Map.of(
-                "loader", filter.loader().map(l -> l.id).orElse(""),
-                "version", filter.gameVersion().orElse("")
+                "version", filter.gameVersion().stream().toList(),
+                "loader", filter.loaders().stream().map(l -> l.id).toList()
         ), json -> CurseWrapperJson.list(json, CurseWrapperJson::fileInfo));
     }
     
@@ -121,11 +121,11 @@ public class CurseWrapper {
         return this.makeRequest(endpoint, Map.of(), mapper);
     }
     
-    private <T> T makeRequest(String endpoint, Map<String, String> queryArgs, Function<JsonElement, T> mapper) throws IOException {
+    private <T> T makeRequest(String endpoint, Map<String, List<String>> queryArgs, Function<JsonElement, T> mapper) throws IOException {
         return this.makeRequest(endpoint, queryArgs, null, mapper);
     }
     
-    private <T> T makeRequest(String endpoint, Map<String, String> queryArgs, @Nullable String body, Function<JsonElement, T> mapper) throws IOException {
+    private <T> T makeRequest(String endpoint, Map<String, List<String>> queryArgs, @Nullable String body, Function<JsonElement, T> mapper) throws IOException {
         String data = this.makeRequest(endpoint, "application/json", queryArgs, body);
         try {
             return mapper.apply(GSON.fromJson(data, JsonElement.class));
@@ -138,16 +138,16 @@ public class CurseWrapper {
         return this.makeStringRequest(endpoint, Map.of());
     }
     
-    private String makeStringRequest(String endpoint, Map<String, String> queryArgs) throws IOException {
+    private String makeStringRequest(String endpoint, Map<String, List<String>> queryArgs) throws IOException {
         return this.makeRequest(endpoint, "text/plain", queryArgs);
     }
     
     @SuppressWarnings("SameParameterValue")
-    private String makeRequest(String endpoint, String accept, Map<String, String> queryArgs) throws IOException {
+    private String makeRequest(String endpoint, String accept, Map<String, List<String>> queryArgs) throws IOException {
         return this.makeRequest(endpoint, accept, queryArgs, null);
     }
     
-    private String makeRequest(String endpoint, String accept, Map<String, String> queryArgs, @Nullable String body) throws IOException {
+    private String makeRequest(String endpoint, String accept, Map<String, List<String>> queryArgs, @Nullable String body) throws IOException {
         HttpRequest.Builder builder;
         if (body == null) {
             builder = HttpRequest.newBuilder().GET();
@@ -161,23 +161,26 @@ public class CurseWrapper {
         return RequestException.send(client, request, HttpResponse.BodySubscribers.ofString(StandardCharsets.UTF_8)).body().strip();
     }
     
-    private URI getUri(String endpoint, Map<String, String> queryArgs) {
+    private URI getUri(String endpoint, Map<String, List<String>> queryArgs) {
         String base = this.baseUri.toString();
         StringBuilder sb = new StringBuilder(base);
         if (!base.endsWith("/")) sb.append("/");
         sb.append(endpoint);
         boolean first = true;
-        for (Map.Entry<String, String> entry : queryArgs.entrySet()) {
+        for (Map.Entry<String, List<String>> entry : queryArgs.entrySet()) {
             if (entry.getKey().isEmpty() || entry.getValue().isEmpty()) continue;
-            if (first) {
-                sb.append("?");
-                first = false;
-            } else {
-                sb.append("&");
+            for (String value : entry.getValue()) {
+                if (value.isEmpty()) continue;
+                if (first) {
+                    sb.append("?");
+                    first = false;
+                } else {
+                    sb.append("&");
+                }
+                sb.append(URLEncoder.encode(entry.getKey(), StandardCharsets.UTF_8));
+                sb.append("=");
+                sb.append(URLEncoder.encode(value, StandardCharsets.UTF_8));
             }
-            sb.append(URLEncoder.encode(entry.getKey(), StandardCharsets.UTF_8));
-            sb.append("=");
-            sb.append(URLEncoder.encode(entry.getValue(), StandardCharsets.UTF_8));
         }
         return URI.create(sb.toString());
     }

@@ -3,27 +3,28 @@ package org.moddingx.cursewrapper.api.request;
 import org.moddingx.cursewrapper.api.response.ModLoader;
 
 import java.util.Optional;
+import java.util.Set;
 
 public record FileFilter(
-        Optional<ModLoader> loader,
-        Optional<String> gameVersion
+        Optional<String> gameVersion,
+        Set<ModLoader> loaders
 ) {
     
-    private static final FileFilter EMPTY = new FileFilter(Optional.empty(), Optional.empty());
+    private static final FileFilter EMPTY = new FileFilter(Optional.empty(), Set.of());
     
     public static FileFilter empty() {
         return EMPTY;
     }
 
-    public static FileFilter loader(ModLoader loader) {
-        return new FileFilter(Optional.of(loader), Optional.empty());
-    }
-
     public static FileFilter version(String version) {
-        return new FileFilter(Optional.empty(), Optional.of(version));
+        return new FileFilter(Optional.of(version), Set.of());
     }
 
-    public static FileFilter create(ModLoader loader, String version) {
-        return new FileFilter(Optional.of(loader), Optional.of(version));
+    public static FileFilter loader(ModLoader... loaders) {
+        return new FileFilter(Optional.empty(), Set.of(loaders));
+    }
+
+    public static FileFilter create(String version, ModLoader... loaders) {
+        return new FileFilter(Optional.of(version), Set.of(loaders));
     }
 }

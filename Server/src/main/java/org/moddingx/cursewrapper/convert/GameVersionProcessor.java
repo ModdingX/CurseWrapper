@@ -23,6 +23,7 @@ public class GameVersionProcessor {
                 case "liteloader", "lite_loader" -> loaders.add(ModLoader.LITE_LOADER);
                 case "cauldron" -> loaders.add(ModLoader.CAULDRON);
                 case "quilt" -> loaders.add(ModLoader.QUILT);
+                case "neoforge" -> loaders.add(ModLoader.NEOFORGE);
                 case "client" -> client = true;
                 case "server" -> server = true;
                 default -> versions.add(str);

@@ -10,6 +10,7 @@ public enum ModLoaderType implements CurseEnum {
     LITE_LOADER(ModLoader.LITE_LOADER),
     FABRIC(ModLoader.FABRIC),
     QUILT(ModLoader.QUILT),
+    NEOFORGE(ModLoader.NEOFORGE), // At the time of writing this is undocumented. However it works and I assume the documentation will be updated some day.
     OTHER(ModLoader.UNKNOWN, "other");
     
     public final ModLoader loader;

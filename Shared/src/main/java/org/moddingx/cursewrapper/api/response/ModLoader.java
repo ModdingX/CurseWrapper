@@ -11,7 +11,8 @@ public enum ModLoader {
     LITE_LOADER,
     RIFT,
     CAULDRON,
-    QUILT;
+    QUILT,
+    NEOFORGE; // At the time of writing this is undocumented but it works.
     
     public final String id;
 

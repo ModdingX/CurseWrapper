@@ -6,6 +6,7 @@ import org.moddingx.cursewrapper.api.response.ProjectInfo;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public class CacheKey<K, V> {
     
@@ -26,6 +27,6 @@ public class CacheKey<K, V> {
     }
     
     public record FileKey(int projectId, int fileId) {}
-    public record SearchKey(String query, Optional<ModLoader> loader, Optional<String> version) {}
+    public record SearchKey(String query, Set<ModLoader> loaders, Optional<String> version) {}
     public record FilesKey(int projectId, Optional<ModLoader> loader, Optional<String> version) {}
 }

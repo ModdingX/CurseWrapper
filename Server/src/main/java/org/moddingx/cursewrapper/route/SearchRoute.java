@@ -25,6 +25,7 @@ import spark.Service;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class SearchRoute extends JsonRoute {
     
@@ -37,9 +38,9 @@ public class SearchRoute extends JsonRoute {
         String query = request.queryParams("query");
         if (query == null) query = "";
 
-        Optional<ModLoader> loader = Optional.ofNullable(request.queryParams("loader")).map(ModLoader::get);
+        Set<ModLoader> loaders = Set.copyOf(Arrays.stream(Objects.requireNonNullElse(request.queryParamsValues("loader"), new String[0])).map(ModLoader::get).toList());
         Optional<String> version = Optional.ofNullable(request.queryParams("version"));
-        CacheKey.SearchKey key = new CacheKey.SearchKey(query, loader, version);
+        CacheKey.SearchKey key = new CacheKey.SearchKey(query, loaders, version);
         
         return this.cache.runLocked(CacheKey.PROJECT, () -> {
             List<Integer> projectIds = this.cache.get(CacheKey.SEARCH, key, this::resolve);
@@ -67,9 +68,9 @@ public class SearchRoute extends JsonRoute {
     }
     
     private ResolveData resolvePartial(CurseApi api, CacheKey.SearchKey key, int current, int left) throws IOException {
-        Set<ModLoaderType> loaders = key.loader().isPresent() ? GameVersionProcessor.forLoader(key.loader().get()) : Set.of();
+        Set<ModLoaderType> loaders = key.loaders().stream().map(GameVersionProcessor::forLoader).flatMap(Set::stream).collect(Collectors.toUnmodifiableSet());
         // The modLoaderType parameter only works if gameVersion is present and using a loader as game version does not work.
-        // Also if reversing the loader yields multiple loader types, it needs to be manually filtered
+        // Also if we have multiple loaders, it needs to be manually filtered
         boolean needsManualLoaderFiltering = loaders.size() > 1 || (loaders.size() == 1 && key.version().isEmpty());
         
         Multimap<String, String> params = ArrayListMultimap.create();
@@ -108,7 +109,7 @@ public class SearchRoute extends JsonRoute {
         //noinspection RedundantIfStatement
         if (mod.latestFilesIndexes.stream()
                 .filter(file -> gameVersion == null || gameVersion.equals(file.gameVersion))
-                .anyMatch(file -> loaders.contains(file.modLoader))
+                .anyMatch(file -> file.modLoader != null && loaders.contains(file.modLoader))
         ) return true;
         
         // We have no efficient way to solve the problem now, as we can't be sure about the loader.
