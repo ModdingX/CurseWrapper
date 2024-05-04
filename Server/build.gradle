@@ -14,13 +14,6 @@ dependencies {
     runtimeOnly 'org.slf4j:slf4j-jdk14:2.0.9'
 }
 
-sourceSets {
-    docker {
-        java.srcDirs = []
-        resources.srcDirs = [ project.file('src/docker') ]
-    }
-}
-
 application.mainClass = "org.moddingx.cursewrapper.Main"
 
 jar {
@@ -31,47 +24,10 @@ jar {
     ])
 }
 
-task collectDependencies {
-    doFirst {
-        Files.createDirectories(project.file('build').toPath())
-        Writer writer = Files.newBufferedWriter(project.file('build/deps.txt').toPath())
-        var processDeps
-        processDeps = { Project p ->
-            p.configurations.runtimeClasspath.getAllDependencies().forEach { dep ->
-                if (dep instanceof ExternalModuleDependency) {
-                    writer.write("${dep.group}:${dep.name}:${dep.version}\n")
-                } else if (dep instanceof ProjectDependency) {
-                    processDeps(dep.dependencyProject)
-                } else {
-                    throw new IllegalStateException("Invalid dependency: ${dep}")
-                }
-            }
-        }
-        processDeps(project)
-        writer.close()
-    }
-}
-
-task dockerZip(type: Zip) {
-    dependsOn jar
-    dependsOn collectDependencies
-    
-    archiveClassifier = 'docker'
-    
-    from(jar.archiveFile, { rename { 'server.jar' } })
-    from(project.file('build/deps.txt'), { rename { 'deps.txt' } })
-    from(rootProject.file('gradle'), { into('gradle') })
-    from(rootProject.file('gradlew'), { rename { 'gradlew' } })
-    from sourceSets.docker.resources
-}
-
-build.dependsOn(dockerZip)
-
 publishing {
     publications {
         mavenJava(MavenPublication) {
             from components.java
-            artifact dockerZip
             pom {
                 licenses {
                     license {
