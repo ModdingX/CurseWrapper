@@ -12,7 +12,7 @@ public enum ModLoader {
     RIFT,
     CAULDRON,
     QUILT,
-    NEOFORGE; // At the time of writing this is undocumented but it works.
+    NEOFORGE; // At the time of writing this is undocumented, but it works.
     
     public final String id;
 

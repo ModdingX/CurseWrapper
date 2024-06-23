@@ -19,8 +19,9 @@ public class ApiConverter {
     public static ProjectInfo project(ModResponse.Mod mod) {
         return new ProjectInfo(
                 mod.id, mod.slug, mod.name, mod.authors.stream().findFirst().map(a -> a.name).orElse("unknown"),
-                mod.summary, mod.downloadCount, mod.allowModDistribution == null || mod.allowModDistribution,
-                URI.create(mod.links.websiteUrl), mod.logo == null ? FALLBACK_LOGO : URI.create(mod.logo.url)
+                mod.summary, mod.downloadCount, mod.latestFilesIndexes.stream().map(latestFileIndex -> latestFileIndex.gameVersion).sorted().toList(),
+                mod.allowModDistribution == null || mod.allowModDistribution, URI.create(mod.links.websiteUrl),
+                mod.logo == null ? FALLBACK_LOGO : URI.create(mod.logo.url)
         );
     }
     

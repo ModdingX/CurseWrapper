@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 public class CurseWrapperJson {
-    
+
     public static JsonElement toJson(Instant instant) {
         BigInteger value1 = BigInteger.valueOf(instant.getEpochSecond()).multiply(BigInteger.valueOf(1000000000));
         BigInteger value2 = BigInteger.valueOf(instant.getNano());
@@ -28,14 +28,14 @@ public class CurseWrapperJson {
         BigInteger[] values = value.divideAndRemainder(BigInteger.valueOf(1000000000));
         return Instant.ofEpochSecond(values[0].longValue(), values[1].intValue());
     }
-    
+
     public static JsonElement toJson(Dependency dependency) {
         JsonObject json = new JsonObject();
         json.addProperty("type", dependency.type().id);
         json.addProperty("project", dependency.projectId());
         return json;
     }
-    
+
     public static Dependency dependency(JsonElement json) {
         JsonObject obj = json.getAsJsonObject();
         RelationType type = RelationType.get(obj.get("type").getAsString());
@@ -59,7 +59,7 @@ public class CurseWrapperJson {
         json.add("hashes", object(file.hashes(), JsonPrimitive::new));
         return json;
     }
-    
+
     public static FileInfo fileInfo(JsonElement json) {
         JsonObject obj = json.getAsJsonObject();
         int projectId = obj.get("project").getAsInt();
@@ -76,15 +76,18 @@ public class CurseWrapperJson {
         Map<String, String> hashes = map(obj.get("hashes"), JsonElement::getAsString);
         return new FileInfo(projectId, fileId, name, loader, versions, release, environment, date, fileSize, fingerprint, dependencies, hashes);
     }
-    
+
     public static JsonElement toJson(ProjectInfo project) {
         JsonObject json = new JsonObject();
+        JsonArray gameVersions = new JsonArray();
+        project.gameVersions().forEach(gameVersions::add);
         json.addProperty("project", project.projectId());
         json.addProperty("slug", project.slug());
         json.addProperty("name", project.name());
         json.addProperty("owner", project.owner());
         json.addProperty("summary", project.summary());
         json.addProperty("downloadCount", project.downloadCount());
+        json.add("gameVersions", gameVersions);
         json.addProperty("distribution", project.distribution());
         json.addProperty("website", project.website().toString());
         json.addProperty("thumbnail", project.thumbnail().toString());
@@ -99,10 +102,11 @@ public class CurseWrapperJson {
         String owner = obj.get("owner").getAsString();
         String summary = obj.get("summary").getAsString();
         int downloadCount = obj.get("downloadCount").getAsInt();
+        List<String> files = obj.getAsJsonArray("gameVersions").asList().stream().map(JsonElement::getAsString).sorted().toList();
         boolean distribution = obj.get("distribution").getAsBoolean();
         URI website = URI.create(obj.get("website").getAsString());
         URI thumbnail = URI.create(obj.get("thumbnail").getAsString());
-        return new ProjectInfo(projectId, slug, name, owner, summary, downloadCount, distribution, website, thumbnail);
+        return new ProjectInfo(projectId, slug, name, owner, summary, downloadCount, files, distribution, website, thumbnail);
     }
 
     public static <T> JsonArray array(List<T> values, Function<? super T, ? extends JsonElement> mapper) {
