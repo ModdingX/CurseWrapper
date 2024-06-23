@@ -8,6 +8,7 @@ public record ProjectInfo(
         String name,
         String owner,
         String summary,
+        int downloadCount,
         boolean distribution,
         URI website,
         URI thumbnail
