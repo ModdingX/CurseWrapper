@@ -1,0 +1,43 @@
+name: 'Publish'
+on:
+  create:
+    branches:
+      - 'master'
+
+jobs:
+  publish:
+    if: startsWith(github.repository, 'ModdingX/') # don't run in forks
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v4
+      - name: 'Setup Java'
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+      - name: 'Build Docker Image'
+        run: |
+          docker build \
+          --pull --no-cache \
+          --build-arg="VERSION=${{ github.ref_name }}" \
+          -t "ghcr.io/moddingx/cursewrapper:${{ github.ref_name }}" \
+          -t "ghcr.io/moddingx/cursewrapper:latest" \
+          .
+      - name: 'Build'
+        run: |
+          ./gradlew \
+          -Pversion=${{ github.ref_name }} \
+          -PmoddingxUsername=${{ secrets.PUBLISH_USER }} \
+          -PmoddingxPassword=${{ secrets.PUBLISH_PASSWORD }} \
+          build publish
+      - name: 'Login to package registry'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: 'Publish Docker Image'
+        run: |
+          docker push "ghcr.io/moddingx/cursewrapper:${{ github.ref_name }}"
+          docker push "ghcr.io/moddingx/cursewrapper:latest"

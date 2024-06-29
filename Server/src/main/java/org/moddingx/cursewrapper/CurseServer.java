@@ -15,18 +15,25 @@ public class CurseServer {
     private final String version;
     private final Service spark;
     
-    public CurseServer(String version, int port, SslData ssl, int threads, CurseCache cache) {
+    public CurseServer(String version, int port, SslData ssl, CurseCache cache) {
         logger.info("Starting Server on port {}.", port);
         this.version = version;
         this.spark = Service.ignite();
         this.spark.port(port);
-        logger.info("Running on {} threads.", threads);
-        this.spark.threadPool(threads, threads, -1);
+        this.spark.withVirtualThread();
         if (ssl != null) {
             this.spark.secure(ssl.cert().toAbsolutePath().normalize().toString(), ssl.key(), null, null);
         } else {
             logger.warn("Running without SSL.");
         }
+
+        // Support trailing slashes
+        this.spark.before((req, res) -> {
+            String path = req.pathInfo();
+            if (path.length() > 1 && path.endsWith("/")) {
+                res.redirect(path.substring(0, path.length() - 1));
+            }
+        });
         
         this.spark.get("/version", new VersionRoute(this.spark, cache, version));
         this.spark.get("/search", new SearchRoute(this.spark, cache));

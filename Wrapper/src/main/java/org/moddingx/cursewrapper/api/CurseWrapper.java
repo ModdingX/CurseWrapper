@@ -4,11 +4,11 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
+import org.jetbrains.annotations.Nullable;
 import org.moddingx.cursewrapper.api.request.FileFilter;
 import org.moddingx.cursewrapper.api.response.FileInfo;
 import org.moddingx.cursewrapper.api.response.ProjectInfo;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URLEncoder;
@@ -34,7 +34,9 @@ public class CurseWrapper {
     private final URI baseUri;
 
     public CurseWrapper(URI baseUri) {
-        this.client = HttpClient.newHttpClient();
+        this.client = HttpClient.newBuilder()
+                .followRedirects(HttpClient.Redirect.NORMAL)
+                .build();
         this.baseUri = Objects.requireNonNull(baseUri, "Null URI in CurseWrapper");
     }
 

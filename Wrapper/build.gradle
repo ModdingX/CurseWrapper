@@ -1,6 +1,8 @@
-apply plugin: 'maven-publish'
+plugins {
+    id 'maven-publish'
+}
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
 jar {
     manifest.attributes([
@@ -34,7 +36,9 @@ publishing {
 
     repositories {
         maven {
-            url rootProject.file('../moddingx/maven')
+            name 'moddingx'
+            url 'https://maven.moddingx.org/release'
+            credentials(PasswordCredentials)
         }
     }
 }

@@ -48,8 +48,6 @@ public class Main {
                 .availableUnless(specDocker, specNoSsl).withRequiredArg().defaultsTo("");
 
         OptionSpec<Integer> specPort = options.accepts("port", "The port to run on.").withRequiredArg().ofType(Integer.class);
-        OptionSpec<Integer> specThreads = options.accepts("threads", "How many threads the server should use.")
-                .withRequiredArg().ofType(Integer.class).defaultsTo(Math.min(4, Runtime.getRuntime().availableProcessors()));
 
         OptionSet set = options.parse(args);
         
@@ -82,7 +80,7 @@ public class Main {
         CurseApi api = new CurseApi(token);
         api.testToken();
         CurseCache cache = new CurseCache(api);
-        CurseServer server = new CurseServer(version, port, ssl, set.valueOf(specThreads), cache);
+        CurseServer server = new CurseServer(version, port, ssl, cache);
         Runtime.getRuntime().addShutdownHook(new Thread(server::shutdown));
         logger.info("Initialisation done.");
     }
