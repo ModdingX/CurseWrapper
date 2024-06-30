@@ -1,12 +1,12 @@
 package org.moddingx.cursewrapper.backend.data.response;
 
 import com.google.gson.annotations.Expose;
+import jakarta.annotation.Nullable;
 import org.moddingx.cursewrapper.backend.CurseData;
 import org.moddingx.cursewrapper.backend.data.structure.ModLoaderType;
 import org.moddingx.cursewrapper.backend.data.structure.ModReleaseType;
 import org.moddingx.cursewrapper.backend.data.structure.ModStatus;
 
-import javax.annotation.Nullable;
 import java.util.Date;
 import java.util.List;
 

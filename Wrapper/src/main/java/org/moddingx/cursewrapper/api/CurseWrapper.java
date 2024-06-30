@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
-import org.jetbrains.annotations.Nullable;
+import jakarta.annotation.Nullable;
 import org.moddingx.cursewrapper.api.request.FileFilter;
 import org.moddingx.cursewrapper.api.response.FileInfo;
 import org.moddingx.cursewrapper.api.response.ProjectInfo;

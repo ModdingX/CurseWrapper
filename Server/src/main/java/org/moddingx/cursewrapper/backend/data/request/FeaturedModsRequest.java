@@ -1,9 +1,9 @@
 package org.moddingx.cursewrapper.backend.data.request;
 
 import com.google.gson.annotations.Expose;
+import jakarta.annotation.Nullable;
 import org.moddingx.cursewrapper.backend.CurseData;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 public class FeaturedModsRequest implements CurseData {

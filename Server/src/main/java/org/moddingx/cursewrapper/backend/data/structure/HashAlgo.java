@@ -1,6 +1,7 @@
 package org.moddingx.cursewrapper.backend.data.structure;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 

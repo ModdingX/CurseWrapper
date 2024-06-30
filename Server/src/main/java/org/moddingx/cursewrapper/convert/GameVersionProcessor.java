@@ -1,10 +1,10 @@
 package org.moddingx.cursewrapper.convert;
 
+import jakarta.annotation.Nullable;
 import org.moddingx.cursewrapper.api.response.FileEnvironment;
 import org.moddingx.cursewrapper.api.response.ModLoader;
 import org.moddingx.cursewrapper.backend.data.structure.ModLoaderType;
 
-import javax.annotation.Nullable;
 import java.util.*;
 
 // Still no real loader support, take the game versions apart here

@@ -4,6 +4,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import jakarta.annotation.Nullable;
 import org.moddingx.cursewrapper.api.CurseWrapperJson;
 import org.moddingx.cursewrapper.api.response.ModLoader;
 import org.moddingx.cursewrapper.api.response.ProjectInfo;
@@ -22,7 +23,6 @@ import spark.Request;
 import spark.Response;
 import spark.Service;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
