@@ -29,8 +29,10 @@ public class CurseServer {
 
         // Support trailing slashes
         this.spark.before((req, res) -> {
-            String path = req.pathInfo();
-            if (path.length() > 1 && path.endsWith("/")) {
+            String path = req.servletPath();
+            String pathExtra = req.pathInfo();
+            if (path != null && pathExtra != null) path = path + pathExtra;
+            if (path != null && path.length() > 1 && path.endsWith("/")) {
                 res.redirect(path.substring(0, path.length() - 1));
             }
         });
