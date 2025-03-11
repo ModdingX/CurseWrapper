@@ -5,7 +5,10 @@ import org.moddingx.cursewrapper.api.response.FileEnvironment;
 import org.moddingx.cursewrapper.api.response.ModLoader;
 import org.moddingx.cursewrapper.backend.data.structure.ModLoaderType;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 
 // Still no real loader support, take the game versions apart here
 public class GameVersionProcessor {
@@ -44,9 +47,10 @@ public class GameVersionProcessor {
         return new GameVersionData(loaders.stream().sorted().toList(), versions.stream().sorted().toList(), environment);
     }
 
-    public static boolean check(List<String> gameVersions, @Nullable ModLoader loader, @Nullable String version) {
+    // Empty loaders means all.
+    public static boolean check(List<String> gameVersions, Set<ModLoader> loaders, @Nullable String version) {
         GameVersionData data = data(gameVersions);
-        return (loader == null || data.loader().contains(loader)) && (version == null || data.versions().contains(version));
+        return (loaders.isEmpty() || data.loader().stream().anyMatch(loaders::contains)) && (version == null || data.versions().contains(version));
     }
 
     // Never return other as this is passed to the CurseForge API

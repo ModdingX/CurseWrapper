@@ -21,9 +21,7 @@ import spark.Response;
 import spark.Service;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class FilesRoute extends JsonRoute {
 
@@ -33,9 +31,9 @@ public class FilesRoute extends JsonRoute {
 
     @Override
     protected JsonElement apply(Request request, Response response, RouteData route) throws IOException {
-        Optional<ModLoader> loader = Optional.ofNullable(request.queryParams("loader")).map(ModLoader::get);
+        Set<ModLoader> loaders = Set.copyOf(Arrays.stream(Objects.requireNonNullElse(request.queryParamsValues("loader"), new String[0])).map(ModLoader::get).toList());
         Optional<String> version = Optional.ofNullable(request.queryParams("version"));
-        CacheKey.FilesKey key = new CacheKey.FilesKey(this.integer(request, "projectId"), loader, version);
+        CacheKey.FilesKey key = new CacheKey.FilesKey(this.integer(request, "projectId"), loaders, version);
 
         return this.cache.runLocked(CacheKey.FILE, () -> {
             List<CacheKey.FileKey> fileIds = this.cache.get(CacheKey.FILES, key, this::resolve);
@@ -57,7 +55,7 @@ public class FilesRoute extends JsonRoute {
         // to loop through the pagination until we have them all
         // Still add a counter to prevent endless loops in case
         // something breaks.
-        while (currentIdx < max && counter < 30) {
+        while (currentIdx < max && counter < 50) {
             Multimap<String, String> params = ArrayListMultimap.create();
             params.put("index", Integer.toString(currentIdx));
             params.put("pageSize", Integer.toString(300));
@@ -72,7 +70,7 @@ public class FilesRoute extends JsonRoute {
 
         List<CacheKey.FileKey> ids = new ArrayList<>();
         for (ModFileResponse.ModFile file : files) {
-            if (GameVersionProcessor.check(file.gameVersions, key.loader().orElse(null), key.version().orElse(null))) {
+            if (GameVersionProcessor.check(file.gameVersions, key.loaders(), key.version().orElse(null))) {
                 CacheKey.FileKey fileKey = new CacheKey.FileKey(file.modId, file.id);
                 ids.add(fileKey);
                 this.cache.store(CacheKey.FILE, fileKey, ApiConverter.file(file));

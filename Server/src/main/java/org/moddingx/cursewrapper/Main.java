@@ -1,12 +1,12 @@
 package org.moddingx.cursewrapper;
 
-import org.moddingx.cursewrapper.backend.CurseApi;
-import org.moddingx.cursewrapper.cache.CurseCache;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 import joptsimple.util.PathConverter;
 import joptsimple.util.PathProperties;
+import org.moddingx.cursewrapper.backend.CurseApi;
+import org.moddingx.cursewrapper.cache.CurseCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

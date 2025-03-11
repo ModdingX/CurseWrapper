@@ -19,7 +19,10 @@ import spark.Response;
 import spark.Service;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 public class LatestFileRoute extends JsonRoute {
 
@@ -29,9 +32,9 @@ public class LatestFileRoute extends JsonRoute {
 
     @Override
     protected JsonElement apply(Request request, Response response, RouteData route) throws IOException {
-        Optional<ModLoader> loader = Optional.ofNullable(request.queryParams("loader")).map(ModLoader::get);
+        Set<ModLoader> loaders = Set.copyOf(Arrays.stream(Objects.requireNonNullElse(request.queryParamsValues("loader"), new String[0])).map(ModLoader::get).toList());
         Optional<String> version = Optional.ofNullable(request.queryParams("version"));
-        CacheKey.FilesKey key = new CacheKey.FilesKey(this.integer(request, "projectId"), loader, version);
+        CacheKey.FilesKey key = new CacheKey.FilesKey(this.integer(request, "projectId"), loaders, version);
 
         return this.cache.runLocked(CacheKey.FILE, () -> {
             Optional<CacheKey.FileKey> fileId = this.cache.get(CacheKey.LATEST_FILE, key, this::resolve);
@@ -61,7 +64,7 @@ public class LatestFileRoute extends JsonRoute {
             counter += 1;
             
             for (ModFileResponse.ModFile file : resp.data) {
-                if (GameVersionProcessor.check(file.gameVersions, key.loader().orElse(null), key.version().orElse(null))) {
+                if (GameVersionProcessor.check(file.gameVersions, key.loaders(), key.version().orElse(null))) {
                     CacheKey.FileKey fileKey = new CacheKey.FileKey(file.modId, file.id);
                     this.cache.store(CacheKey.FILE, fileKey, ApiConverter.file(file));
                     return Optional.of(fileKey);

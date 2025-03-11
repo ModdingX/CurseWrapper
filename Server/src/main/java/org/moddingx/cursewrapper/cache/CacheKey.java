@@ -28,5 +28,5 @@ public class CacheKey<K, V> {
     
     public record FileKey(int projectId, int fileId) {}
     public record SearchKey(String query, Set<ModLoader> loaders, Optional<String> version) {}
-    public record FilesKey(int projectId, Optional<ModLoader> loader, Optional<String> version) {}
+    public record FilesKey(int projectId, Set<ModLoader> loaders, Optional<String> version) {}
 }
